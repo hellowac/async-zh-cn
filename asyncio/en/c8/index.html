@@ -1,0 +1,2016 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c7/">
+      
+      
+        <link rel="next" href="../c9/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>8. 使用和查询任务 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#8-使用和查询任务" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              8. 使用和查询任务
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#81-任务的生命周期" class="md-nav__link">
+    8.1 任务的生命周期
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#82-如何检查任务的状态" class="md-nav__link">
+    8.2 如何检查任务的状态
+  </a>
+  
+    <nav class="md-nav" aria-label="8.2 如何检查任务的状态">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#821-检查任务是否完成" class="md-nav__link">
+    8.2.1 检查任务是否完成
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#822-检查任务是否被取消" class="md-nav__link">
+    8.2.2 检查任务是否被取消
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#83-如何获取任务结果" class="md-nav__link">
+    8.3 如何获取任务结果
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#84-如何获取任务异常" class="md-nav__link">
+    8.4 如何获取任务异常
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#85-如何取消任务" class="md-nav__link">
+    8.5 如何取消任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#86-如何在任务中使用回调" class="md-nav__link">
+    8.6 如何在任务中使用回调
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#87-如何设置任务名称" class="md-nav__link">
+    8.7 如何设置任务名称
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#81-任务的生命周期" class="md-nav__link">
+    8.1 任务的生命周期
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#82-如何检查任务的状态" class="md-nav__link">
+    8.2 如何检查任务的状态
+  </a>
+  
+    <nav class="md-nav" aria-label="8.2 如何检查任务的状态">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#821-检查任务是否完成" class="md-nav__link">
+    8.2.1 检查任务是否完成
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#822-检查任务是否被取消" class="md-nav__link">
+    8.2.2 检查任务是否被取消
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#83-如何获取任务结果" class="md-nav__link">
+    8.3 如何获取任务结果
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#84-如何获取任务异常" class="md-nav__link">
+    8.4 如何获取任务异常
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#85-如何取消任务" class="md-nav__link">
+    8.5 如何取消任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#86-如何在任务中使用回调" class="md-nav__link">
+    8.6 如何在任务中使用回调
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#87-如何设置任务名称" class="md-nav__link">
+    8.7 如何设置任务名称
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="8-使用和查询任务">8. 使用和查询任务<a class="headerlink" href="#8-使用和查询任务" title="Permanent link">&para;</a></h1>
+<p><strong>8. Work With and Query Tasks</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>任务是 asyncio 程序的货币。</p>
+<p>在本节中，我们将仔细研究如何在程序中与它们交互。</p>
+</div>
+<div class="tabbed-block">
+<p>Tasks are the currency of asyncio programs.</p>
+<p>In this section, we will take a closer look at how to interact with them in our programs.</p>
+</div>
+</div>
+</div>
+<h2 id="81-任务的生命周期">8.1 任务的生命周期<a class="headerlink" href="#81-任务的生命周期" title="Permanent link">&para;</a></h2>
+<p><strong>8.1 Task Life-Cycle</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>异步任务有生命周期。</p>
+<p>首先，从协程创建任务。</p>
+<p>然后它被安排在事件循环内独立执行。</p>
+<p>在某个时刻，它会运行。</p>
+<p>运行时它可能会被挂起，例如等待另一个协程或任务。 它可能正常完成并返回结果，也可能因异常而失败。</p>
+<p>另一个协程可能会干预并取消任务。</p>
+<p>最终，它会完成，并且无法再次执行。</p>
+<p>我们可以将这个生命周期总结如下：</p>
+<ol>
+<li>被创建</li>
+<li>被调度<ol>
+<li>被取消</li>
+</ol>
+</li>
+<li>执行<ol>
+<li>挂起</li>
+<li>执行结果</li>
+<li>发生异常</li>
+<li>被取消</li>
+</ol>
+</li>
+<li>执行完毕</li>
+</ol>
+<p>请注意，暂停、结果、异常和取消本身并不是状态，它们是正在运行的任务的重要转换点。</p>
+<p>下图总结了这个生命周期，显示了每个阶段之间的转换。</p>
+<p><a class="glightbox" href="./imgs/Asyncio-Task-Life-Cycle.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="123" src="./imgs/Asyncio-Task-Life-Cycle.png" /></a></p>
+<p>您可以在教程中了解有关 asyncio 任务生命周期的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-task-life-cycle/">Asyncio 任务生命周期</a></li>
+</ul>
+<p>现在我们已经从高层次上熟悉了任务的生命周期，让我们仔细看看每个阶段。</p>
+</div>
+<div class="tabbed-block">
+<p>An asyncio Task has a life cycle.</p>
+<p>Firstly, a task is created from a coroutine.</p>
+<p>It is then scheduled for independent execution within the event loop.</p>
+<p>At some point, it will run.</p>
+<p>While running it may be suspended, such as awaiting another coroutine or task. It may finish normally and return a result or fail with an exception.</p>
+<p>Another coroutine may intervene and cancel the task.</p>
+<p>Eventually, it will be done and cannot be executed again.</p>
+<p>We can summarize this life-cycle as follows:</p>
+<ol>
+<li>Created</li>
+<li>Scheduled<ol>
+<li>Canceled</li>
+</ol>
+</li>
+<li>Running<ol>
+<li>Suspended</li>
+<li>Result</li>
+<li>Exception</li>
+<li>Canceled</li>
+</ol>
+</li>
+<li>Done</li>
+</ol>
+<p>Note that Suspended, Result, Exception, and Canceled are not states per se, they are important points of transition for a running task.</p>
+<p>The diagram below summarizes this life cycle showing the transitions between each phase.</p>
+<p><a class="glightbox" href="./imgs/Asyncio-Task-Life-Cycle.png" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="123" src="./imgs/Asyncio-Task-Life-Cycle.png" /></a></p>
+<p>You can learn more about the asyncio task life-cycle in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-task-life-cycle/">Asyncio Task Life-Cycle</a></li>
+</ul>
+<p>Now that we are familiar with the life cycle of a task from a high level, let’s take a closer look at each phase.</p>
+</div>
+</div>
+</div>
+<h2 id="82-如何检查任务的状态">8.2 如何检查任务的状态<a class="headerlink" href="#82-如何检查任务的状态" title="Permanent link">&para;</a></h2>
+<p><strong>8.2 How to Check Task Status</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>创建任务后，我们可以查看任务的状态。</p>
+<p>我们可能想要检查两种状态，它们是：</p>
+<ul>
+<li>任务是否完成。</li>
+<li>任务是否被取消。</li>
+</ul>
+<p>让我们依次仔细看看每一个。</p>
+</div>
+<div class="tabbed-block">
+<p>After a Task is created, we can check the status of the task.</p>
+<p>There are two statuses we might want to check, they are:</p>
+<ul>
+<li>Whether the task is done.</li>
+<li>Whether the task was canceled.</li>
+</ul>
+<p>Let’s take a closer look at each in turn.</p>
+</div>
+</div>
+</div>
+<h3 id="821-检查任务是否完成">8.2.1 检查任务是否完成<a class="headerlink" href="#821-检查任务是否完成" title="Permanent link">&para;</a></h3>
+<p><strong>8.2.1 Check if a Task is Done</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.done">done()</a> 方法检查任务是否完成。</p>
+<p>如果任务完成，该方法返回 <strong>True</strong>，否则返回 <strong>False</strong>。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查任务是否完成</span>
+<span style="color: #008000; font-weight: bold">if</span> task<span style="color: #666666">.</span>done():
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>如果任务曾经有机会运行但现在不再运行，则该任务已完成。</p>
+<p>已安排的任务未完成。</p>
+<p>同样，正在运行的任务也没有完成。</p>
+<p>如果满足以下条件，则任务已完成：</p>
+<ul>
+<li>协程正常结束。</li>
+<li>协程显式返回。</li>
+<li>协程中出现意外错误或异常</li>
+<li>任务被取消。</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>We can check if a task is done via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.done">done()</a> method.</p>
+<p>The method returns <strong>True</strong> if the task is done, or <strong>False</strong> otherwise.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># check if a task is done</span>
+<span style="color: #008000; font-weight: bold">if</span> task<span style="color: #666666">.</span>done():
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>A task is done if it has had the opportunity to run and is now no longer running.</p>
+<p>A task that has been scheduled is not done.</p>
+<p>Similarly, a task that is running is not done.</p>
+<p>A task is done if:</p>
+<ul>
+<li>The coroutine finishes normally.</li>
+<li>The coroutine returns explicitly.</li>
+<li>An unexpected error or exception is raised in the coroutine</li>
+<li>The task is canceled.</li>
+</ul>
+</div>
+</div>
+</div>
+<h3 id="822-检查任务是否被取消">8.2.2 检查任务是否被取消<a class="headerlink" href="#822-检查任务是否被取消" title="Permanent link">&para;</a></h3>
+<p><strong>8.2.2 Check if a Task is Canceled</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">中文</label><label for="__tabbed_5_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.cancelled">cancelled()</a> 方法检查任务是否被取消。</p>
+<p>如果任务被取消，该方法返回 <strong>True</strong>，否则返回 <strong>False</strong>。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查任务是否被取消</span>
+<span style="color: #008000; font-weight: bold">if</span> task<span style="color: #666666">.</span>cancelled():
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>如果对任务调用 <strong>cancel()</strong> 方法并成功完成，则任务将被取消，例如 <strong>cancel()</strong> 返回 <strong>True</strong>。</p>
+<p>如果未调用 <strong>cancel()</strong> 方法，或者调用 <strong>cancel()</strong> 方法但取消任务失败，则不会取消任务。</p>
+</div>
+<div class="tabbed-block">
+<p>We can check if a task is canceled via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.cancelled">cancelled()</a> method.</p>
+<p>The method returns <strong>True</strong> if the task was canceled, or <strong>False</strong> otherwise.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># check if a task was canceled</span>
+<span style="color: #008000; font-weight: bold">if</span> task<span style="color: #666666">.</span>cancelled():
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>A task is canceled if the <strong>cancel()</strong> method was called on the task and completed successfully, e..g <strong>cancel()</strong> returned <strong>True</strong>.</p>
+<p>A task is not canceled if the <strong>cancel()</strong> method was not called, or if the <strong>cancel()</strong> method was called but failed to cancel the task.</p>
+</div>
+</div>
+</div>
+<h2 id="83-如何获取任务结果">8.3 如何获取任务结果<a class="headerlink" href="#83-如何获取任务结果" title="Permanent link">&para;</a></h2>
+<p><strong>8.3 How to Get Task Result</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">中文</label><label for="__tabbed_6_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.result">result()</a> 方法获取任务的结果。</p>
+<p>这将返回由 <strong>Task</strong> 包装的协程的返回值，如果包装的协程未显式返回值，则返回 <strong>None</strong>。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 从包装的协程中获取返回值</span>
+value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+</code></pre></div>
+<p>如果协程引发未处理的错误或异常，则在调用 <strong>result()</strong> 方法时会重新引发，并且可能需要处理。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 从包装的协程中获取返回值</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">except</span> <span style="color: #CB3F38; font-weight: bold">Exception</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 任务失败，没有结果</span>
+</code></pre></div>
+<p>如果任务被取消，则在调用 <strong>result()</strong> 方法时会引发 <strong>CancelledError</strong> 异常，并且可能需要处理。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 从包装的协程中获取返回值</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>CancelledError:
+    <span style="color: #3D7B7B; font-style: italic"># 任务被取消</span>
+</code></pre></div>
+<p>因此，最好先检查任务是否被取消。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查任务是否未被取消</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>cancelled():
+    <span style="color: #3D7B7B; font-style: italic"># 从包装的协程中获取返回值</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">else</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 任务被取消</span>
+</code></pre></div>
+<p>如果任务尚未完成，则在调用 <strong>result()</strong> 方法时会引发 <strong>InvalidStateError</strong> 异常，并且可能需要处理。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 从包装的协程中获取返回值</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>InvalidStateError:
+    <span style="color: #3D7B7B; font-style: italic"># 任务尚未完成</span>
+</code></pre></div>
+<p>因此，最好先检查任务是否已完成。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查任务是否未完成</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>done():
+    <span style="color: #008000; font-weight: bold">await</span> task
+<span style="color: #3D7B7B; font-style: italic"># 从包装的协程中获取返回值</span>
+value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>We can get the result of a task via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.result">result()</a> method.</p>
+<p>This returns the return value of the coroutine wrapped by the <strong>Task</strong> or <strong>None</strong> if the wrapped coroutine does not explicitly return a value.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># get the return value from the wrapped coroutine</span>
+value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+</code></pre></div>
+<p>If the coroutine raises an unhandled error or exception, it is re-raised when calling the <strong>result()</strong> method and may need to be handled.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># get the return value from the wrapped coroutine</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">except</span> <span style="color: #CB3F38; font-weight: bold">Exception</span>:
+    <span style="color: #3D7B7B; font-style: italic"># task failed and there is no result</span>
+</code></pre></div>
+<p>If the task was canceled, then a <strong>CancelledError</strong> exception is raised when calling the <strong>result()</strong> method and may need to be handled.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># get the return value from the wrapped coroutine</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>CancelledError:
+    <span style="color: #3D7B7B; font-style: italic"># task was canceled</span>
+</code></pre></div>
+<p>As such, it is a good idea to check if the task was canceled first.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># check if the task was not canceled</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>cancelled():
+    <span style="color: #3D7B7B; font-style: italic"># get the return value from the wrapped coroutine</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">else</span>:
+    <span style="color: #3D7B7B; font-style: italic"># task was canceled</span>
+</code></pre></div>
+<p>If the task is not yet done, then an <strong>InvalidStateError</strong> exception is raised when calling the <strong>result()</strong> method and may need to be handled.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># get the return value from the wrapped coroutine</span>
+    value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>InvalidStateError:
+    <span style="color: #3D7B7B; font-style: italic"># task is not yet done</span>
+</code></pre></div>
+<p>As such, it is a good idea to check if the task is done first.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># check if the task is not done</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>done():
+    <span style="color: #008000; font-weight: bold">await</span> task
+<span style="color: #3D7B7B; font-style: italic"># get the return value from the wrapped coroutine</span>
+value <span style="color: #666666">=</span> task<span style="color: #666666">.</span>result()
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="84-如何获取任务异常">8.4 如何获取任务异常<a class="headerlink" href="#84-如何获取任务异常" title="Permanent link">&para;</a></h2>
+<p><strong>8.4 How to Get Task Exception</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">中文</label><label for="__tabbed_7_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>由任务包装的协程可能会引发未处理的异常。</p>
+<p>实际上，这将取消任务。</p>
+<p>我们可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.exception">Exception()</a>方法在任务包装的协程中检索未处理的异常。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 获取任务引发的异常</span>
+exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+</code></pre></div>
+<p>如果包装的协程中未引发未处理的异常，则返回 <strong>None</strong> 值。</p>
+<p>如果任务被取消，则调用 <strong>Exception()</strong> 方法时会引发 <strong>CancelledError</strong> 异常，并且可能需要处理。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 获取任务引发的异常</span>
+    exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>CancelledError:
+    <span style="color: #3D7B7B; font-style: italic"># 任务被取消</span>
+</code></pre></div>
+<p>因此，最好先检查任务是否被取消。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查任务是否未被取消</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>cancelled():
+    <span style="color: #3D7B7B; font-style: italic"># 获取任务引发的异常</span>
+    exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+<span style="color: #008000; font-weight: bold">else</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 任务被取消</span>
+</code></pre></div>
+<p>如果任务尚未完成，则在调用 <strong>exception()</strong> 方法时会引发 <strong>InvalidStateError</strong> 异常，并且可能需要进行处理。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 获取任务引发的异常</span>
+    exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>InvalidStateError:
+    <span style="color: #3D7B7B; font-style: italic"># 任务尚未完成</span>
+</code></pre></div>
+<p>因此，最好先检查任务是否已完成。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查任务是否未完成</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>done():
+    <span style="color: #008000; font-weight: bold">await</span> task
+<span style="color: #3D7B7B; font-style: italic"># 获取任务引发的异常</span>
+exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>A coroutine wrapped by a task may raise an exception that is not handled.</p>
+<p>This will cancel the task, in effect.</p>
+<p>We can retrieve an unhandled exception in the coroutine wrapped by a task via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.exception">exception()</a> method.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># get the exception raised by a task</span>
+exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+</code></pre></div>
+<p>If an unhandled exception was not raised in the wrapped coroutine, then a value of None is returned.</p>
+<p>If the task was canceled, then a CancelledError exception is raised when calling the exception() method and may need to be handled.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># get the exception raised by a task</span>
+    exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>CancelledError:
+    <span style="color: #3D7B7B; font-style: italic"># task was canceled</span>
+</code></pre></div>
+<p>As such, it is a good idea to check if the task was canceled first.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># check if the task was not canceled</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>cancelled():
+    <span style="color: #3D7B7B; font-style: italic"># get the exception raised by a task</span>
+    exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+<span style="color: #008000; font-weight: bold">else</span>:
+    <span style="color: #3D7B7B; font-style: italic"># task was canceled</span>
+</code></pre></div>
+<p>If the task is not yet done, then an InvalidStateError exception is raised when calling the exception() method and may need to be handled.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #3D7B7B; font-style: italic"># get the exception raised by a task</span>
+    exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+<span style="color: #008000; font-weight: bold">except</span> asyncio<span style="color: #666666">.</span>InvalidStateError:
+    <span style="color: #3D7B7B; font-style: italic"># task is not yet done</span>
+</code></pre></div>
+<p>As such, it is a good idea to check if the task is done first.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># check if the task is not done</span>
+<span style="color: #008000; font-weight: bold">if</span> <span style="color: #AA22FF; font-weight: bold">not</span> task<span style="color: #666666">.</span>done():
+    <span style="color: #008000; font-weight: bold">await</span> task
+<span style="color: #3D7B7B; font-style: italic"># get the exception raised by a task</span>
+exception <span style="color: #666666">=</span> task<span style="color: #666666">.</span>exception()
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="85-如何取消任务">8.5 如何取消任务<a class="headerlink" href="#85-如何取消任务" title="Permanent link">&para;</a></h2>
+<p><strong>8.5 How to Cancel a Task</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">中文</label><label for="__tabbed_8_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.cancel">cancel()</a> 方法取消计划任务。</p>
+<p>如果任务被取消，则取消方法返回 <strong>True</strong>，否则返回 <strong>False</strong>。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 取消任务</span>
+was_cancelled <span style="color: #666666">=</span> task<span style="color: #666666">.</span>cancel()
+</code></pre></div>
+<p>如果任务已经完成，则无法取消，<strong>cancel()</strong>方法将返回<strong>False</strong>，并且任务不会处于已取消状态。</p>
+<p>下次任务有机会运行时，它将引发 <strong>CancelledError</strong> 异常。</p>
+<p>如果在包装的协程中未处理 <strong>CancelledError</strong> 异常，则任务将被取消。</p>
+<p>否则，如果在包装的协程中处理 <strong>CancelledError</strong> 异常，则任务将不会被取消。</p>
+<p><strong>cancel()</strong> 方法还可以采用消息参数，该参数将在 <strong>CancelledError</strong> 的内容中使用。</p>
+</div>
+<div class="tabbed-block">
+<p>We can cancel a scheduled task via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.cancel">cancel()</a> method.</p>
+<p>The cancel method returns <strong>True</strong> if the task was canceled, or <strong>False</strong> otherwise.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># cancel the task</span>
+was_cancelled <span style="color: #666666">=</span> task<span style="color: #666666">.</span>cancel()
+</code></pre></div>
+<p>If the task is already done, it cannot be canceled and the <strong>cancel()</strong> method will return <strong>False</strong> and the task will not have the status of canceled.</p>
+<p>The next time the task is given an opportunity to run, it will raise a <strong>CancelledError</strong> exception.</p>
+<p>If the <strong>CancelledError</strong> exception is not handled within the wrapped coroutine, the task will be canceled.</p>
+<p>Otherwise, if the <strong>CancelledError</strong> exception is handled within the wrapped coroutine, the task will not be canceled.</p>
+<p>The <strong>cancel()</strong> method can also take a message argument which will be used in the content of the <strong>CancelledError</strong>.</p>
+</div>
+</div>
+</div>
+<h2 id="86-如何在任务中使用回调">8.6 如何在任务中使用回调<a class="headerlink" href="#86-如何在任务中使用回调" title="Permanent link">&para;</a></h2>
+<p><strong>8.6 How to Use Callback With a Task</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">中文</label><label for="__tabbed_9_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.add_done_callback">add_done_callback()</a> 方法向任务添加完成回调函数。</p>
+<p>此方法采用任务完成时要调用的函数的名称。</p>
+<p>回调函数必须将 <strong>Task</strong> 实例作为参数。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># 完成回调函数</span>
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">handle</span>(task):
+    <span style="color: #008000">print</span>(task)
+
+<span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 注册完成回调函数</span>
+task<span style="color: #666666">.</span>add_done_callback(handle)
+</code></pre></div>
+<p>回想一下，当包装的协程正常完成、返回、引发未处理的异常或取消任务时，任务就可以完成。</p>
+<p><strong>add_done_callback()</strong> 方法可用于<strong>添加或注册任意数量的完成回调函数</strong>。</p>
+<p>我们还可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.remove_done_callback"><strong>remove_done_callback()</strong></a> 函数<strong>删除或取消注册回调函数</strong> 。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 删除已完成的回调函数</span>
+task<span style="color: #666666">.</span>remove_done_callback(handle)
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>We can add a done callback function to a task via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.add_done_callback">add_done_callback()</a> method.</p>
+<p>This method takes the name of a function to call when the task is done.</p>
+<p>The callback function must take the <strong>Task</strong> instance as an argument.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># done callback function</span>
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">handle</span>(task):
+    <span style="color: #008000">print</span>(task)
+
+<span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># register a done callback function</span>
+task<span style="color: #666666">.</span>add_done_callback(handle)
+</code></pre></div>
+<p>Recall that a task may be done when the wrapped coroutine finishes normally when it returns, when an unhandled exception is raised or when the task is canceled.</p>
+<p>The <strong>add_done_callback()</strong> method can be used to add or register as many done callback functions as we like.</p>
+<p>We can also remove or de-register a callback function via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.remove_done_callback"><strong>remove_done_callback()</strong></a> function.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># remove a done callback function</span>
+task<span style="color: #666666">.</span>remove_done_callback(handle)
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="87-如何设置任务名称">8.7 如何设置任务名称<a class="headerlink" href="#87-如何设置任务名称" title="Permanent link">&para;</a></h2>
+<p><strong>8.7 How to Set the Task Name</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="10:2"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">中文</label><label for="__tabbed_10_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>任务可能有一个名称。</p>
+<p>如果从同一个协程创建多个任务并且我们需要某种方法以编程方式区分它们，那么这个名称会很有帮助。</p>
+<p>当从协程创建任务时，可以通过 <strong>“name”</strong> 参数设置名称。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 从协程创建任务</span>
+task <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>create_task(task_coroutine(), name<span style="color: #666666">=</span><span style="color: #BA2121">&#39;MyTask&#39;</span>)
+</code></pre></div>
+<p>任务的名称也可以通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.set_name">set_name()</a> 方法设置。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 设置任务名称</span>
+task<span style="color: #666666">.</span>set_name(<span style="color: #BA2121">&#39;MyTask&#39;</span>)
+</code></pre></div>
+<p>我们可以通过 <strong>get_name()</strong> 方法检索任务的名称。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 获取任务的名称</span>
+name <span style="color: #666666">=</span> task<span style="color: #666666">.</span>get_name()
+</code></pre></div>
+<p>您可以在教程中了解有关检查任务状态的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-task-status/">如何检查 Asyncio 任务状态</a></li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>A task may have a name.</p>
+<p>This name can be helpful if multiple tasks are created from the same coroutine and we need some way to tell them apart programmatically.</p>
+<p>The name can be set when the task is created from a coroutine via the <strong>“name”</strong> argument.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a task from a coroutine</span>
+task <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>create_task(task_coroutine(), name<span style="color: #666666">=</span><span style="color: #BA2121">&#39;MyTask&#39;</span>)
+</code></pre></div>
+<p>The name for the task can also be set via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.set_name">set_name()</a> method.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># set the name of the task</span>
+task<span style="color: #666666">.</span>set_name(<span style="color: #BA2121">&#39;MyTask&#39;</span>)
+</code></pre></div>
+<p>We can retrieve the name of a task via the <strong>get_name()</strong> method.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># get the name of a task</span>
+name <span style="color: #666666">=</span> task<span style="color: #666666">.</span>get_name()
+</code></pre></div>
+<p>You can learn more about checking the status of tasks in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-task-status/">How to Check Asyncio Task Status</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

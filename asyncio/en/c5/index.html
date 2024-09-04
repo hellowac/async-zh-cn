@@ -1,0 +1,1617 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c4/">
+      
+      
+        <link rel="next" href="../c6/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>5. 定义、创建和运行协程 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#5-定义创建和运行协程" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              5. 定义、创建和运行协程
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#51-如何定义协程" class="md-nav__link">
+    5.1 如何定义协程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-如何创建协程" class="md-nav__link">
+    5.2 如何创建协程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-python中如何运行协程" class="md-nav__link">
+    5.3 Python中如何运行协程
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#51-如何定义协程" class="md-nav__link">
+    5.1 如何定义协程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-如何创建协程" class="md-nav__link">
+    5.2 如何创建协程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-python中如何运行协程" class="md-nav__link">
+    5.3 Python中如何运行协程
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="5-定义创建和运行协程">5. 定义、创建和运行协程<a class="headerlink" href="#5-定义创建和运行协程" title="Permanent link">&para;</a></h1>
+<p><strong>5. Define, Create and Run Coroutines</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以在 Python 程序中定义协程，就像定义新的子例程（函数）一样。</p>
+<p>一旦定义，协程函数就可以用来创建协程对象。</p>
+<p><strong>“asyncio”</strong>模块提供了在事件循环中运行协程对象的工具，事件循环是协程的运行时。</p>
+</div>
+<div class="tabbed-block">
+<p>We can define coroutines in our Python programs, just like defining new subroutines (functions).</p>
+<p>Once defined, a coroutine function can be used to create a coroutine object.</p>
+<p>The <strong>“asyncio”</strong> module provides tools to run our coroutine objects in an event loop, which is a runtime for coroutines.</p>
+</div>
+</div>
+</div>
+<h2 id="51-如何定义协程">5.1 如何定义协程<a class="headerlink" href="#51-如何定义协程" title="Permanent link">&para;</a></h2>
+<p><strong>5.1 How to Define a Coroutine</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>协程可以通过 <strong>“async def”</strong> 表达式来定义。</p>
+<p>这是用于定义子例程的 <strong>“def”</strong> 表达式的扩展。</p>
+<p>它定义了一个可以创建的协程并返回一个协程对象。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># 定义一个协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>使用 <strong>“async def”</strong> 表达式定义的协程被称为“协程函数”。</p>
+<blockquote>
+<p>协程函数：返回协程对象的函数。 协程函数可以使用 async def 语句来定义，并且可以包含await、async for 和async with 关键字。</p>
+<p>— <a href="https://docs.python.org/3/glossary.html">PYTHON GLOSSARY</a></p>
+</blockquote>
+<p>然后，协程可以在其中使用协程特定的表达式，例如 <strong>await</strong>、<strong>async for</strong> 和 <strong>async with</strong>。</p>
+<blockquote>
+<p>Python 协程的执行可以在许多点暂停和恢复（请参阅协程）。 wait 表达式、async for 和 async with 只能在协程函数体中使用。</p>
+<p>— <a href="https://docs.python.org/3/reference/compound_stmts.html#async-def">COROUTINE FUNCTION DEFINITION</a></p>
+</blockquote>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># 定义一个协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 等待另一个协程</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>A coroutine can be defined via the <strong>“async def”</strong> expression.</p>
+<p>This is an extension of the <strong>“def”</strong> expression for defining subroutines.</p>
+<p>It defines a coroutine that can be created and returns a coroutine object.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># define a coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>A coroutine defined with the <strong>“async def”</strong> expression is referred to as a “coroutine function“.</p>
+<blockquote>
+<p>coroutine function: A function which returns a coroutine object. A coroutine function may be defined with the async def statement, and may contain await, async for, and async with keywords.</p>
+<p>— PYTHON GLOSSARY</p>
+</blockquote>
+<p>A coroutine can then use coroutine-specific expressions within it, such as <strong>await</strong>, <strong>async for</strong>, and <strong>async with</strong>.</p>
+<blockquote>
+<p>Execution of Python coroutines can be suspended and resumed at many points (see coroutine). await expressions, async for and async with can only be used in the body of a coroutine function.</p>
+<p>— COROUTINE FUNCTION DEFINITION</p>
+</blockquote>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># define a coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># await another coroutine</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="52-如何创建协程">5.2 如何创建协程<a class="headerlink" href="#52-如何创建协程" title="Permanent link">&para;</a></h2>
+<p><strong>5.2 How to Create a Coroutine</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>一旦定义了协程，就可以创建它。</p>
+<p>这看起来就像调用一个子例程。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建一个协程</span>
+coro <span style="color: #666666">=</span> custom_coro()
+</code></pre></div>
+<p>这不会执行协程。</p>
+<p>它返回一个<a href="https://docs.python.org/3/reference/datamodel.html#coroutines">“coroutine”对象</a>。</p>
+<blockquote>
+<p>您可以将协程函数视为协程对象的工厂； 更直接地，请记住调用协程函数不会导致任何用户编写的代码执行，而只是构建并返回一个协程对象。</p>
+<p>— PAGE 516, <a href="https://amzn.to/3TazSBW">PYTHON IN A NUTSHELL</a>, 2017.</p>
+</blockquote>
+<p><strong>“协程”</strong> Python 对象具有方法，例如 <strong>send()</strong> 和 <strong>close()</strong>。 它是一种类型。</p>
+<p>我们可以通过创建协程实例并调用 <strong>type()</strong> 内置函数来报告其类型来演示这一点。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 检查协程的类型</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 定义协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 等待另一个协程</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 创建协程</span>
+coro <span style="color: #666666">=</span> custom_coro()
+<span style="color: #3D7B7B; font-style: italic"># 检查协程的类型</span>
+<span style="color: #008000">print</span>(<span style="color: #008000">type</span>(coro))
+</code></pre></div>
+<p>运行示例报告创建的协程是一个“协程”类。</p>
+<p>我们还会得到一个运行时错误，因为协程已创建但从未执行，我们将在下一节中探讨这一点。</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>&lt;class &#39;coroutine&#39;&gt;
+sys:1: RuntimeWarning: coroutine &#39;custom_coro&#39; was never awaited
+</code></pre></div>
+<p>协程对象是一个等待对象。</p>
+<p>这意味着它是实现 <strong>__await__()</strong> 方法的 Python 类型。</p>
+<blockquote>
+<p>可等待对象通常实现 <strong>__await__()</strong> 方法。 从 async def 函数返回的协程对象是可等待的。</p>
+<p>— <a href="https://docs.python.org/3/reference/datamodel.html#coroutines">AWAITABLE OBJECTS</a></p>
+</blockquote>
+<p>您可以在教程中了解有关可等待的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-awaitable">Python 中的 Asyncio Awaitable 是什么</a></li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>Once a coroutine is defined, it can be created.</p>
+<p>This looks like calling a subroutine.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a coroutine</span>
+coro <span style="color: #666666">=</span> custom_coro()
+</code></pre></div>
+<p>This does not execute the coroutine.</p>
+<p>It returns a <a href="https://docs.python.org/3/reference/datamodel.html#coroutines">“coroutine” object</a>.</p>
+<blockquote>
+<p>You can think of a coroutine function as a factory for coroutine objects; more directly, remember that calling a coroutine function does not cause any user-written code to execute, but rather just builds and returns a coroutine object.</p>
+<p>— PAGE 516, <a href="https://amzn.to/3TazSBW">PYTHON IN A NUTSHELL</a>, 2017.</p>
+</blockquote>
+<p>A <strong>“coroutine”</strong> Python object has methods, such as <strong>send()</strong> and <strong>close()</strong>. It is a type.</p>
+<p>We can demonstrate this by creating an instance of a coroutine and calling the <strong>type()</strong> built-in function in order to report its type.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># check the type of a coroutine</span>
+
+<span style="color: #3D7B7B; font-style: italic"># define a coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># await another coroutine</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># create the coroutine</span>
+coro <span style="color: #666666">=</span> custom_coro()
+<span style="color: #3D7B7B; font-style: italic"># check the type of the coroutine</span>
+<span style="color: #008000">print</span>(<span style="color: #008000">type</span>(coro))
+</code></pre></div>
+<p>Running the example reports that the created coroutine is a “coroutine” class.</p>
+<p>We also get a RuntimeError because the coroutine was created but never executed, we will explore that in the next section.</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>&lt;class &#39;coroutine&#39;&gt;
+sys:1: RuntimeWarning: coroutine &#39;custom_coro&#39; was never awaited
+</code></pre></div>
+<p>A coroutine object is an awaitable.</p>
+<p>This means it is a Python type that implements the <strong>__await__()</strong> method.</p>
+<blockquote>
+<p>An awaitable object generally implements an <strong>__await__()</strong> method. Coroutine objects returned from async def functions are awaitable.</p>
+<p>— <a href="https://docs.python.org/3/reference/datamodel.html#coroutines">AWAITABLE OBJECTS</a></p>
+</blockquote>
+<p>You can learn more about awaitables in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-awaitable">What is an Asyncio Awaitable in Python</a></li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="53-python中如何运行协程">5.3 Python中如何运行协程<a class="headerlink" href="#53-python中如何运行协程" title="Permanent link">&para;</a></h2>
+<p><strong>5.3 How to Run a Coroutine From Python</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>可以定义和创建协程，但它们只能在事件循环内执行。</p>
+<blockquote>
+<p>事件循环是每个异步应用程序的核心。 事件循环运行异步任务和回调、执行网络 IO 操作并运行子进程。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>执行协程的事件循环管理协程之间的协作多任务处理。</p>
+<blockquote>
+<p>协程对象只能在事件循环运行时运行。</p>
+<p>— PAGE 517, <a href="https://amzn.to/3TazSBW">PYTHON IN A NUTSHELL</a>, 2017.</p>
+</blockquote>
+<p>启动协程事件循环的典型方法是通过 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.run">asyncio.run()</a> 函数。</p>
+<p>该函数采用一个协程并返回该协程的值。 提供的协程可以用作基于协程的程序的入口点。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 运行协程的示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+<span style="color: #3D7B7B; font-style: italic"># 定义一个协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 等待另一个协程</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 主协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 执行我的自定义协程</span>
+    <span style="color: #008000; font-weight: bold">await</span> custom_coro()
+
+<span style="color: #3D7B7B; font-style: italic"># 启动协程程序</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>现在我们知道如何定义、创建和运行协程，让我们花点时间来了解事件循环。</p>
+</div>
+<div class="tabbed-block">
+<p>Coroutines can be defined and created, but they can only be executed within an event loop.</p>
+<blockquote>
+<p>The event loop is the core of every asyncio application. Event loops run asynchronous tasks and callbacks, perform network IO operations, and run subprocesses.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>The event loop that executes coroutines, manages the cooperative multitasking between coroutines.</p>
+<blockquote>
+<p>Coroutine objects can only run when the event loop is running.</p>
+<p>— PAGE 517, <a href="https://amzn.to/3TazSBW">PYTHON IN A NUTSHELL</a>, 2017.</p>
+</blockquote>
+<p>The typical way to start a coroutine event loop is via the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.run">asyncio.run()</a> function.</p>
+<p>This function takes one coroutine and returns the value of the coroutine. The provided coroutine can be used as the entry point into the coroutine-based program.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># example of running a coroutine</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+<span style="color: #3D7B7B; font-style: italic"># define a coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># await another coroutine</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># main coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># execute my custom coroutine</span>
+    <span style="color: #008000; font-weight: bold">await</span> custom_coro()
+
+<span style="color: #3D7B7B; font-style: italic"># start the coroutine program</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>```</p>
+<p>Now that we know how to define, create, and run a coroutine, let’s take a moment to understand the event loop.</p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

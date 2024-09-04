@@ -1,0 +1,1916 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c10/">
+      
+      
+        <link rel="next" href="../c12/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>11. 在Group中管理多个协程 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#11-在group中管理多个协程" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              11. 在Group中管理多个协程
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#111-asynciotaskgroup简介" class="md-nav__link">
+    11.1 asyncio.TaskGroup简介
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#112-如何创建一个asynciotaskgroup" class="md-nav__link">
+    11.2 如何创建一个asyncio.TaskGroup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#113-如何使用-asynciotaskgroup-创建任务" class="md-nav__link">
+    11.3 如何使用 asyncio.TaskGroup 创建任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#114-如何等待使用-asynciotaskgroup-的任务" class="md-nav__link">
+    11.4 如何等待使用 asyncio.TaskGroup 的任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#115-在一个任务失败时如何取消所有使用-asynciotaskgroup-的任务" class="md-nav__link">
+    11.5 在一个任务失败时如何取消所有使用 asyncio.TaskGroup 的任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#116-使用-taskgroup-等待多个任务的示例" class="md-nav__link">
+    11.6 使用 TaskGroup 等待多个任务的示例
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#111-asynciotaskgroup简介" class="md-nav__link">
+    11.1 asyncio.TaskGroup简介
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#112-如何创建一个asynciotaskgroup" class="md-nav__link">
+    11.2 如何创建一个asyncio.TaskGroup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#113-如何使用-asynciotaskgroup-创建任务" class="md-nav__link">
+    11.3 如何使用 asyncio.TaskGroup 创建任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#114-如何等待使用-asynciotaskgroup-的任务" class="md-nav__link">
+    11.4 如何等待使用 asyncio.TaskGroup 的任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#115-在一个任务失败时如何取消所有使用-asynciotaskgroup-的任务" class="md-nav__link">
+    11.5 在一个任务失败时如何取消所有使用 asyncio.TaskGroup 的任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#116-使用-taskgroup-等待多个任务的示例" class="md-nav__link">
+    11.6 使用 TaskGroup 等待多个任务的示例
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="11-在group中管理多个协程">11. 在Group中管理多个协程<a class="headerlink" href="#11-在group中管理多个协程" title="Permanent link">&para;</a></h1>
+<p>Manage Multiple Coroutines in a Group</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以使用 <code>**asyncio.TaskGroup**</code> 来一起管理多个协程。</p>
+<p>如果组中的某个任务因异常失败，组中的所有任务都会自动被取消。</p>
+</div>
+<div class="tabbed-block">
+<p>We can manage multiple coroutines together in a group using the <strong>asyncio.TaskGroup</strong>.</p>
+<p>If a task in the group fails with an exception, all tasks in the group are cancelled automatically.</p>
+</div>
+</div>
+</div>
+<h2 id="111-asynciotaskgroup简介">11.1 asyncio.TaskGroup简介<a class="headerlink" href="#111-asynciotaskgroup简介" title="Permanent link">&para;</a></h2>
+<p>What is an asyncio.TaskGroup</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Python 3.11 引入了用于管理关联 <code>asyncio</code> 任务组的 <code>asyncio.TaskGroup</code>。</p>
+<blockquote>
+<p>添加了 <code>TaskGroup</code> 类，这是一种异步上下文管理器，持有一个任务组，并在退出时等待所有任务完成。对于新代码，推荐使用 <code>TaskGroup</code> 而不是直接使用 <code>create_task()</code> 和 <code>gather()</code>。</p>
+<ul>
+<li><a href="https://docs.python.org/3/whatsnew/3.11.html">Python 3.11 新特性</a></li>
+</ul>
+</blockquote>
+<p><code>asyncio.TaskGroup</code> 类旨在替代用于创建任务的 <code>asyncio.create_task()</code> 函数和用于等待任务组的 <code>asyncio.gather()</code> 函数。</p>
+<p>历史上，我们使用 <code>asyncio.create_task()</code> 函数创建并启动协程作为 <code>asyncio.Task</code>。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建并启动协程作为任务</span>
+task <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>create_task(coro())
+</code></pre></div>
+<p>这会创建一个新的 <code>asyncio.Task</code> 对象，并将其发送到 <code>asyncio</code> 事件循环中尽快执行。</p>
+<p>然后，我们可以选择等待该任务完成。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 等待任务完成</span>
+result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> task
+</code></pre></div>
+<p>你可以在教程中了解更多关于将协程作为 <code>asyncio.Task</code> 对象执行的信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-create-task/">如何在 Python 中创建 Asyncio 任务</a></li>
+</ul>
+<p>正如我们所见，<code>asyncio.gather()</code> 函数用于同时创建和启动多个协程作为 <code>asyncio.Task</code> 对象发送到事件循环中，允许调用者将它们作为一个组来处理。</p>
+<p>最常见的用法是等待所有启动的任务完成。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 启动协程作为任务并等待它们完成</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2(), coro3())
+</code></pre></div>
+<p><code>asyncio.TaskGroup</code> 可以执行这些操作，并且是首选的方法。</p>
+<blockquote>
+<p>一个持有任务组的异步上下文管理器。可以使用 <code>create_task()</code> 将任务添加到组中。当上下文管理器退出时，所有任务都会被等待完成。</p>
+<ul>
+<li><a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.TaskGroup">ASYNCIO 任务组</a></li>
+</ul>
+</blockquote>
+</div>
+<div class="tabbed-block">
+<p>Python 3.11 introduced the asyncio.TaskGroup task for managing a group of associated asyncio task.</p>
+<blockquote>
+<p>Added the TaskGroup class, an asynchronous context manager holding a group of tasks that will wait for all of them upon exit. For new code this is recommended over using create_task() and gather() directly.</p>
+<ul>
+<li><a href="https://docs.python.org/3/whatsnew/3.11.html">WHAT’S NEW IN PYTHON 3.11</a></li>
+</ul>
+</blockquote>
+<p>The <strong>asyncio.TaskGroup</strong> class is intended as a replacement for the <strong>asyncio.create_task()</strong> function for creating tasks and the <strong>asyncio.gather()</strong> function for waiting on a group of tasks.</p>
+<p>Historically, we create and issue a coroutine as an <strong>asyncio.Task</strong> using the <strong>asyncio.create_task()</strong> function.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create and issue coroutine as task</span>
+task <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>create_task(coro())
+</code></pre></div>
+<p>This creates a new <strong>asyncio.Task</strong> object and issues it to the asyncio event loop for execution as soon as it is able.</p>
+<p>We can then choose to await the task and wait for it to be completed.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># wait for task to complete</span>
+result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> task
+</code></pre></div>
+<p>You can learn more about executing coroutines as <strong>asyncio.Task</strong> objects in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-create-task/">How to Create Asyncio Tasks in Python</a></li>
+</ul>
+<p>As we have seen, the <strong>asyncio.gather()</strong> function is used to create and issue many coroutines simultaneously as <strong>asyncio.Task</strong> objects to the event loop, allowing the caller to treat them all as a group.</p>
+<p>The most common usage is to wait for all issued tasks to complete.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># issue coroutines as tasks and wait for them to complete</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2(), coro2)
+</code></pre></div>
+<p>The <strong>asyncio.TaskGroup</strong> can perform both of these activities and is the preferred approach.</p>
+<blockquote>
+<p>An asynchronous context manager holding a group of tasks. Tasks can be added to the group using create_task(). All tasks are awaited when the context manager exits.</p>
+<ul>
+<li><a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.TaskGroup">ASYNCIO TASK GROUPS</a></li>
+</ul>
+</blockquote>
+</div>
+</div>
+</div>
+<h2 id="112-如何创建一个asynciotaskgroup">11.2 如何创建一个asyncio.TaskGroup<a class="headerlink" href="#112-如何创建一个asynciotaskgroup" title="Permanent link">&para;</a></h2>
+<p>How to Create an asyncio.TaskGroup</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><code>asyncio.TaskGroup</code> 对象实现了异步上下文管理器接口，这是该类的首选使用方式。</p>
+<p>这意味着该类的实例是通过 “<strong>async with</strong>” 表达式创建和使用的。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建一个 TaskGroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>如果你对 “<strong>async with</strong>” 表达式不熟悉，可以参考以下教程：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-async-with/">如何在 Python 中使用 “async with” 表达式</a></li>
+</ul>
+<p>回想一下，异步上下文管理器实现了可以等待的 <code>__aenter__()</code> 和 <code>__aexit__()</code> 方法。</p>
+<p>对于 <code>asyncio.TaskGroup</code>，当上下文管理器块退出时，<code>__aexit__()</code> 方法会自动被调用，并会等待所有由 <code>asyncio.TaskGroup</code> 创建的任务完成。</p>
+<p>这意味着无论是正常退出 <code>TaskGroup</code> 对象的块，还是通过异常退出，都会自动等待直到所有组内任务完成。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建一个 TaskGroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+<span style="color: #3D7B7B; font-style: italic"># 等待所有组内任务完成</span>
+</code></pre></div>
+<p>你可以在以下教程中了解更多关于异步上下文管理器的信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asynchronous-context-manager/">Python 中的异步上下文管理器</a></li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>An <strong>asyncio.TaskGroup</strong> object implements the asynchronous context manager interface, and this is the preferred usage of the class.</p>
+<p>This means that an instance of the class is created and is used via the “<strong>async with</strong>” expression.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a taskgroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>If you are new to the “<strong>async with</strong>” expression, see the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-async-with/">How to Use the “async with” Expression in Python</a></li>
+</ul>
+<p>Recall that an asynchronous context manager implements the <code>__aenter__()</code> and <code>__aexit__()</code> methods which can be awaited.</p>
+<p>In the case of the <strong>asyncio.TaskGroup</strong>, the <code>__aexit__()</code> method which is called automatically when the context manager block is exited will await all tasks created by the <strong>asyncio.TaskGroup</strong>.</p>
+<p>This means that exiting the <strong>TaskGroup</strong> object’s block normally or via an exception will automatically await until all group tasks are done.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a taskgroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+<span style="color: #3D7B7B; font-style: italic"># wait for all group tasks are done</span>
+</code></pre></div>
+<p>You can learn more about asynchronous context managers in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asynchronous-context-manager/">Asynchronous Context Managers in Python</a></li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="113-如何使用-asynciotaskgroup-创建任务">11.3 如何使用 asyncio.TaskGroup 创建任务<a class="headerlink" href="#113-如何使用-asynciotaskgroup-创建任务" title="Permanent link">&para;</a></h2>
+<p>How to Create Tasks Using asyncio.TaskGroup</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过 <code>asyncio.TaskGroup</code> 对象的 <strong>create_task()</strong> 方法在任务组中创建一个任务。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建一个 TaskGroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># 创建并启动一个任务</span>
+    task <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro())
+</code></pre></div>
+<p>这将创建一个 <strong>asyncio.Task</strong> 对象，并将其发送到 asyncio 事件循环中执行，类似于 <strong>asyncio.create_task()</strong> 函数，不同之处在于这个任务与任务组相关联。</p>
+<p>如果我们选择直接等待该任务，可以获取结果。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建一个 TaskGroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># 创建并启动一个任务</span>
+    result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> group<span style="color: #666666">.</span>create_task(coro())
+</code></pre></div>
+<p>使用 <code>asyncio.TaskGroup</code> 的好处是我们可以在组中启动多个任务，并在任务之间执行代码，例如检查结果或收集更多数据。</p>
+</div>
+<div class="tabbed-block">
+<p>We can create a task in the task group via the <strong>create_task()</strong> method on the <strong>asyncio.TaskGroup</strong> object.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a taskgroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># create and issue a task</span>
+    task <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro())
+</code></pre></div>
+<p>This will create an <strong>asyncio.Task</strong> object and issue it to the asyncio event loop for execution, just like the <strong>asyncio.create_task()</strong> function, except that the task is associated with the group.</p>
+<p>We can await the task directly if we choose and get results.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a taskgroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># create and issue a task</span>
+    result <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> group<span style="color: #666666">.</span>create_task(coro())
+</code></pre></div>
+<p>The benefit of using the <strong>asyncio.TaskGroup</strong> is that we can issue multiple tasks in the group and execute code in between. such as checking results or gathering more data.</p>
+</div>
+</div>
+</div>
+<h2 id="114-如何等待使用-asynciotaskgroup-的任务">11.4 如何等待使用 <code>asyncio.TaskGroup</code> 的任务<a class="headerlink" href="#114-如何等待使用-asynciotaskgroup-的任务" title="Permanent link">&para;</a></h2>
+<p>How to Wait on Tasks Using asyncio.TaskGroup</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">中文</label><label for="__tabbed_5_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过退出异步上下文管理器块来等待组中的所有任务。</p>
+<p>因此，这些任务会自动被等待，不需要额外的操作。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建一个 TaskGroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+<span style="color: #3D7B7B; font-style: italic"># 等待所有组内任务完成</span>
+</code></pre></div>
+<p>如果不希望这种行为，则必须在退出上下文管理器之前，确保所有任务已经“完成”（结束、取消或失败）。</p>
+</div>
+<div class="tabbed-block">
+<p>We can wait on all tasks in the group by exiting the asynchronous context manager block.</p>
+<p>As such, the tasks are awaited automatically and nothing additional is required.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a taskgroup</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+<span style="color: #3D7B7B; font-style: italic"># wait for all group tasks are done</span>
+</code></pre></div>
+<p>If this behavior is not preferred, then we must ensure all tasks are “done” (finished, canceled, or failed) before exiting the context manager.</p>
+</div>
+</div>
+</div>
+<h2 id="115-在一个任务失败时如何取消所有使用-asynciotaskgroup-的任务">11.5 在一个任务失败时如何取消所有使用 <code>asyncio.TaskGroup</code> 的任务<a class="headerlink" href="#115-在一个任务失败时如何取消所有使用-asynciotaskgroup-的任务" title="Permanent link">&para;</a></h2>
+<p>How to Cancel All Tasks If One Task Fails Using asyncio.TaskGroup</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">中文</label><label for="__tabbed_6_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>如果组中的一个任务因异常失败，那么组内所有未完成的任务将被取消。</p>
+<p>这一过程是自动执行的，不需要额外的代码。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># 处理组中任何任务的失败</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #666666">...</span>
+    <span style="color: #3D7B7B; font-style: italic"># 创建一个 TaskGroup</span>
+    <span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+        <span style="color: #3D7B7B; font-style: italic"># 创建并启动任务</span>
+        task1 <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro1())
+        <span style="color: #3D7B7B; font-style: italic"># 创建并启动任务</span>
+        task2 <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro2())
+        <span style="color: #3D7B7B; font-style: italic"># 创建并启动任务</span>
+        task3 <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro3())
+    <span style="color: #3D7B7B; font-style: italic"># 等待所有组内任务完成</span>
+<span style="color: #008000; font-weight: bold">except</span>:
+    <span style="color: #3D7B7B; font-style: italic"># 所有未完成的任务都会被取消</span>
+    <span style="color: #008000; font-weight: bold">pass</span>
+</code></pre></div>
+<p>如果不希望这种行为，那么每个任务的失败必须在任务内部自行管理，例如在协程内部使用 <code>try-except</code> 块。</p>
+<p>现在我们已经了解了如何使用 <code>asyncio.TaskGroup</code>，接下来让我们看看一些实际的示例。</p>
+</div>
+<div class="tabbed-block">
+<p>If one task in the group fails with an exception, then all non-done tasks remaining in the group will be canceled.</p>
+<p>This is performed automatically and does not require any additional code.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># handle the failure of any tasks in the group</span>
+<span style="color: #008000; font-weight: bold">try</span>:
+    <span style="color: #666666">...</span>
+    <span style="color: #3D7B7B; font-style: italic"># create a taskgroup</span>
+    <span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+        <span style="color: #3D7B7B; font-style: italic"># create and issue a task</span>
+        task1 <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro1())
+        <span style="color: #3D7B7B; font-style: italic"># create and issue a task</span>
+        task2 <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro2())
+        <span style="color: #3D7B7B; font-style: italic"># create and issue a task</span>
+        task3 <span style="color: #666666">=</span> group<span style="color: #666666">.</span>create_task(coro3())
+    <span style="color: #3D7B7B; font-style: italic"># wait for all group tasks are done</span>
+<span style="color: #008000; font-weight: bold">except</span>:
+    <span style="color: #3D7B7B; font-style: italic"># all non-done tasks are cancelled</span>
+    <span style="color: #008000; font-weight: bold">pass</span>
+</code></pre></div>
+<p>If this behavior is not preferred, then the failure of each task must be managed within the tasks themselves, e.g. by a try-except block within the coroutine.</p>
+<p>Now that we know how to use the <strong>asyncio.TaskGroup</strong>, let’s look at some worked examples.</p>
+</div>
+</div>
+</div>
+<h2 id="116-使用-taskgroup-等待多个任务的示例">11.6 使用 TaskGroup 等待多个任务的示例<a class="headerlink" href="#116-使用-taskgroup-等待多个任务的示例" title="Permanent link">&para;</a></h2>
+<p>Example of Waiting on Multiple Tasks with a TaskGroup</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">中文</label><label for="__tabbed_7_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以通过在 <code>asyncio.TaskGroup</code> 中创建多个任务，然后等待所有任务完成的方式来进行探索。</p>
+<p>这可以通过首先定义一组表示我们希望完成的任务的不同协程来实现。</p>
+<p>在这个示例中，我们将定义 3 个协程，每个协程报告一条不同的信息，然后休眠一秒钟。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># 协程任务</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task1</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 输出信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;来自协程 1 的问候&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 休眠以模拟等待</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 协程任务</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task2</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 输出信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;来自协程 2 的问候&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 休眠以模拟等待</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 协程任务</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task3</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 输出信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;来自协程 3 的问候&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 休眠以模拟等待</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+</code></pre></div>
+<p>接下来，我们可以定义一个 <code>main()</code> 协程，通过上下文管理器接口创建 <code>asyncio.TaskGroup</code>。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># asyncio 入口点</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 创建任务组</span>
+    <span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>然后，我们可以将每个协程作为任务创建并发送到事件循环中，尽管它们作为组的一部分被一起收集。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 运行第一个任务</span>
+group<span style="color: #666666">.</span>create_task(task1())
+<span style="color: #3D7B7B; font-style: italic"># 运行第二个任务</span>
+group<span style="color: #666666">.</span>create_task(task2())
+<span style="color: #3D7B7B; font-style: italic"># 运行第三个任务</span>
+group<span style="color: #666666">.</span>create_task(task3())
+</code></pre></div>
+<p>注意，我们不需要保留 <code>asyncio.Task</code> 对象的引用，因为 <code>asyncio.TaskGroup</code> 会为我们跟踪它们。</p>
+<p>此外，我们也不需要等待这些任务，因为当我们退出 <code>asyncio.TaskGroup</code> 的上下文管理器块时，我们将等待组中的所有任务。</p>
+<p>结合起来，完整的示例如下所示。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># asyncio 任务组示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 协程任务</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task1</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 输出信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;来自协程 1 的问候&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 休眠以模拟等待</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 协程任务</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task2</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 输出信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;来自协程 2 的问候&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 休眠以模拟等待</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 协程任务</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task3</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 输出信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;来自协程 3 的问候&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 休眠以模拟等待</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># asyncio 入口点</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 创建任务组</span>
+    <span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+        <span style="color: #3D7B7B; font-style: italic"># 运行第一个任务</span>
+        group<span style="color: #666666">.</span>create_task(task1())
+        <span style="color: #3D7B7B; font-style: italic"># 运行第二个任务</span>
+        group<span style="color: #666666">.</span>create_task(task2())
+        <span style="color: #3D7B7B; font-style: italic"># 运行第三个任务</span>
+        group<span style="color: #666666">.</span>create_task(task3())
+    <span style="color: #3D7B7B; font-style: italic"># 等待所有任务完成...</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;完成&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 入口点</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>运行该示例首先执行 <code>main()</code> 协程，为我们启动一个新的事件循环。</p>
+<p><code>main()</code> 协程运行并创建一个 <code>asyncio.TaskGroup</code>。</p>
+<p>然后，所有三个协程都作为 <code>asyncio.Task</code> 对象创建，并通过 <code>asyncio.TaskGroup</code> 发送到事件循环中。</p>
+<p><code>asyncio.TaskGroup</code> 的上下文管理器块退出，自动等待所有三个任务。</p>
+<p>这些任务会输出信息并进入休眠状态。</p>
+<p>一旦所有任务完成，<code>main()</code> 协程会输出一条最终信息。</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>来自协程 1 的问候
+来自协程 2 的问候
+来自协程 3 的问候
+完成
+</code></pre></div>
+<p>接下来，让我们探索如何使用带有参数和返回值的任务的 <code>asyncio.TaskGroup</code>。</p>
+<p>你可以在教程中了解更多关于如何使用 <code>TaskGroup</code> 的信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-taskgroup/">如何使用 asyncio.TaskGroup</a></li>
+</ul>
+<p>接下来，我们将探索如何在有限时间内等待单个协程。</p>
+</div>
+<div class="tabbed-block">
+<p>We can explore the case of creating multiple tasks within an <strong>asyncio.TaskGroup</strong> and then waiting for all tasks to complete.</p>
+<p>This can be achieved by first defining a suite of different coroutines that represent the tasks we want to complete.</p>
+<p>In this case, we will define 3 coroutines that each report a different message and then sleep for one second.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># coroutine task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task1</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Hello from coroutine 1&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep to simulate waiting</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task2</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Hello from coroutine 2&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep to simulate waiting</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task3</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Hello from coroutine 3&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep to simulate waiting</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+</code></pre></div>
+<p>Next, we can define a <strong>main()</strong> coroutine that creates the <strong>asyncio.TaskGroup</strong> via the context manager interface.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># asyncio entry point</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># create task group</span>
+    <span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+    <span style="color: #3D7B7B; font-style: italic"># ...</span>
+</code></pre></div>
+<p>We can then create and issue each coroutine as a task into the event loop, although collected together as part of the group.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># run first task</span>
+group<span style="color: #666666">.</span>create_task(task1())
+<span style="color: #3D7B7B; font-style: italic"># run second task</span>
+group<span style="color: #666666">.</span>create_task(task2())
+<span style="color: #3D7B7B; font-style: italic"># run third task</span>
+group<span style="color: #666666">.</span>create_task(task3())
+</code></pre></div>
+<p>Notice that we don’t need to keep a reference to the <strong>asyncio.Task</strong> objects as the <strong>asyncio.TaskGroup</strong> will keep track of them for us.</p>
+<p>Also, notice that we don’t need to await the tasks because when we exit the context manager block for the <strong>asyncio.TaskGroup</strong> we will await all tasks in the group.</p>
+<p>Tying this together, the complete example is listed below.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># example of asyncio task group</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task1</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Hello from coroutine 1&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep to simulate waiting</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task2</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Hello from coroutine 2&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep to simulate waiting</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task3</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Hello from coroutine 3&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep to simulate waiting</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># asyncio entry point</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># create task group</span>
+    <span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">with</span> asyncio<span style="color: #666666">.</span>TaskGroup() <span style="color: #008000; font-weight: bold">as</span> group:
+        <span style="color: #3D7B7B; font-style: italic"># run first task</span>
+        group<span style="color: #666666">.</span>create_task(task1())
+        <span style="color: #3D7B7B; font-style: italic"># run second task</span>
+        group<span style="color: #666666">.</span>create_task(task2())
+        <span style="color: #3D7B7B; font-style: italic"># run third task</span>
+        group<span style="color: #666666">.</span>create_task(task3())
+    <span style="color: #3D7B7B; font-style: italic"># wait for all tasks to complete...</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Done&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># entry point</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>Running the example first executes the <strong>main()</strong> coroutine, starting a new event loop for us.</p>
+<p>The <strong>main()</strong> coroutine runs and creates an <strong>asyncio.TaskGroup</strong>.</p>
+<p>All three coroutines are then created as <strong>asyncio.Task</strong> objects and issued to the event loop via the <strong>asyncio.TaskGroup</strong>.</p>
+<p>The context manager block for the <strong>asyncio.TaskGroup</strong> is exited which automatically awaits all three tasks.</p>
+<p>The tasks report their message and sleep.</p>
+<p>Once all tasks are completed the main() coroutine reports a final message.</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Hello from coroutine 1
+Hello from coroutine 2
+Hello from coroutine 3
+Done
+</code></pre></div>
+<p>Next, let’s explore how we might use an <strong>asyncio.TaskGroup</strong> with tasks that take arguments and return values.</p>
+<p>You can learn more about how to use the TaskGroup in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-taskgroup/">How to use asyncio.TaskGroup</a></li>
+</ul>
+<p>Next, we will explore how to wait for a single coroutine with a time limit.</p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

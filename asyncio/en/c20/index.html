@@ -1,0 +1,2050 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c19/">
+      
+      
+        <link rel="next" href="../c21/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>20. 在非阻塞子进程中运行命令 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#20-在非阻塞子进程中运行命令" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              20. 在非阻塞子进程中运行命令
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#201-什么是-asynciosubprocessprocess" class="md-nav__link">
+    20.1 什么是 asyncio.subprocess.Process
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#202-如何直接运行命令" class="md-nav__link">
+    20.2 如何直接运行命令
+  </a>
+  
+    <nav class="md-nav" aria-label="20.2 如何直接运行命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2021-如何使用-asyncio-的-create_subprocess_exec" class="md-nav__link">
+    20.2.1 如何使用 Asyncio 的 create_subprocess_exec()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2022-asyncio-的-create_subprocess_exec-的示例" class="md-nav__link">
+    20.2.2 Asyncio 的 create_subprocess_exec() 的示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#203-如何跟shell一起运行一个命令" class="md-nav__link">
+    20.3 如何跟shell一起运行一个命令
+  </a>
+  
+    <nav class="md-nav" aria-label="20.3 如何跟shell一起运行一个命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2031-如何使用-asyncio-的-create_subprocess_shell" class="md-nav__link">
+    20.3.1 如何使用 Asyncio 的 create_subprocess_shell()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2032-asyncio-的-create_subprocess_shell-的示例" class="md-nav__link">
+    20.3.2 Asyncio 的 create_subprocess_shell() 的示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#201-什么是-asynciosubprocessprocess" class="md-nav__link">
+    20.1 什么是 asyncio.subprocess.Process
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#202-如何直接运行命令" class="md-nav__link">
+    20.2 如何直接运行命令
+  </a>
+  
+    <nav class="md-nav" aria-label="20.2 如何直接运行命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2021-如何使用-asyncio-的-create_subprocess_exec" class="md-nav__link">
+    20.2.1 如何使用 Asyncio 的 create_subprocess_exec()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2022-asyncio-的-create_subprocess_exec-的示例" class="md-nav__link">
+    20.2.2 Asyncio 的 create_subprocess_exec() 的示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#203-如何跟shell一起运行一个命令" class="md-nav__link">
+    20.3 如何跟shell一起运行一个命令
+  </a>
+  
+    <nav class="md-nav" aria-label="20.3 如何跟shell一起运行一个命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2031-如何使用-asyncio-的-create_subprocess_shell" class="md-nav__link">
+    20.3.1 如何使用 Asyncio 的 create_subprocess_shell()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2032-asyncio-的-create_subprocess_shell-的示例" class="md-nav__link">
+    20.3.2 Asyncio 的 create_subprocess_shell() 的示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="20-在非阻塞子进程中运行命令">20. 在非阻塞子进程中运行命令<a class="headerlink" href="#20-在非阻塞子进程中运行命令" title="Permanent link">&para;</a></h1>
+<p><strong>20. Run Commands in Non-Blocking Subprocesses</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以从<code>asyncio</code>执行命令。</p>
+<p>命令将在子进程中运行，我们可以使用非阻塞I/O对其进行读写。</p>
+<p>让我们更仔细地看看。</p>
+</div>
+<div class="tabbed-block">
+<p>We can execute commands from asyncio.</p>
+<p>The command will run in a subprocess that we can write to and read from using non-blocking I/O.</p>
+<p>Let’s take a closer look.</p>
+</div>
+</div>
+</div>
+<h2 id="201-什么是-asynciosubprocessprocess">20.1 什么是 asyncio.subprocess.Process<a class="headerlink" href="#201-什么是-asynciosubprocessprocess" title="Permanent link">&para;</a></h2>
+<p><strong>20.1 What is asyncio.subprocess.Process</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>asyncio通过<a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">asyncio.subprocess.Process</a> 类提供了对于运行子进程的支持和表示。</p>
+<p>它提供了 asyncio 程序中子进程的句柄，允许对其执行操作，例如等待和终止它。</p>
+<blockquote>
+<p>Process是一个高级包装过后的类，允许与子进程通信并监视其完成情况。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html#interacting-with-subprocesses">INTERACTING WITH SUBPROCESSES</a></p>
+</blockquote>
+<p>该 API 与 <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">multiprocessing.Process</a> 类非常相似，也许与 <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">subprocess.Popen</a> 类更新相似。</p>
+<p>具体来说，它与 <strong>subprocess.Popen</strong> 共享 <strong>wait()</strong>、<strong>communicate()</strong> 和 <strong>send_signal()</strong> 等方法以及 <code>stdin</code>、<code>stdout</code> 和 <code>stderr</code> 等属性。</p>
+<p>现在我们知道了 <strong>asyncio.subprocess.Process</strong> 类是什么，让我们看看如何在 asyncio 程序中使用它。</p>
+<p>我们不直接创建 <strong>asyncio.subprocess.Process</strong>。</p>
+<p>相反，当在 asyncio 程序中执行子进程时，会为我们创建该类的实例。</p>
+<blockquote>
+<p>包装由 <strong>create_subprocess_exec()</strong> 和 <strong>create_subprocess_shell()</strong> 函数创建的操作系统进程的对象。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html#interacting-with-subprocesses">INTERACTING WITH SUBPROCESSES</a></p>
+</blockquote>
+<p>有两种方法可以将外部程序作为子进程执行并获取 Process 实例，它们是：</p>
+<ul>
+<li><strong>asyncio.create_subprocess_exec()</strong> 用于直接运行命令。</li>
+<li><strong>asyncio.create_subprocess_shell()</strong> 用于通过 shell 运行命令。</li>
+</ul>
+<p>让我们依次看一下每个例子。</p>
+</div>
+<div class="tabbed-block">
+<p>The <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">asyncio.subprocess.Process</a> class provides a representation of a subprocess run by asyncio.</p>
+<p>It provides a handle on a subprocess in asyncio programs, allowing actions to be performed on it, such as waiting and terminating it.</p>
+<blockquote>
+<p>Process is a high-level wrapper that allows communicating with subprocesses and watching for their completion.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html#interacting-with-subprocesses">INTERACTING WITH SUBPROCESSES</a></p>
+</blockquote>
+<p>The API is very similar to the <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">multiprocessing.Process</a> class and perhaps more so with the <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">subprocess.Popen</a> class.</p>
+<p>Specifically, it shares methods such as <strong>wait()</strong>, <strong>communicate()</strong>, and <strong>send_signal()</strong> and attributes such as stdin, stdout, and stderr with the subprocess.Popen.</p>
+<p>Now that we know what the <strong>asyncio.subprocess.Process</strong> class is, let’s look at how we might use it in our asyncio programs.</p>
+<p>We do not create a <strong>asyncio.subprocess.Process</strong> directly.</p>
+<p>Instead, an instance of the class is created for us when executing a subprocess in an asyncio program.</p>
+<blockquote>
+<p>An object that wraps OS processes created by the create_subprocess_exec() and create_subprocess_shell() functions.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html#interacting-with-subprocesses">INTERACTING WITH SUBPROCESSES</a></p>
+</blockquote>
+<p>There are two ways to execute an external program as a subprocess and acquire a Process instance, they are:</p>
+<ul>
+<li>asyncio.create_subprocess_exec() for running commands directly.</li>
+<li>asyncio.create_subprocess_shell() for running commands via the shell.</li>
+</ul>
+<p>Let’s look at examples of each in turn.</p>
+</div>
+</div>
+</div>
+<h2 id="202-如何直接运行命令">20.2 如何直接运行命令<a class="headerlink" href="#202-如何直接运行命令" title="Permanent link">&para;</a></h2>
+<p><strong>20.2 How to Run a Command Directly</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><a href="https://en.wikipedia.org/wiki/Command-line_interface">command</a> 是在命令行（终端或命令提示符）上执行的程序。 这是另一个直接运行的程序。</p>
+<p>Linux 和 macOS 上的常见示例可能是：</p>
+<ul>
+<li>‘ls‘ 列出目录的内容</li>
+<li>‘cat‘ 报告文件的内容</li>
+<li>‘date‘ 报告日期</li>
+<li>‘echo‘ 报告一个字符串</li>
+<li>‘sleep‘ 睡眠几秒钟</li>
+</ul>
+<p>等等。</p>
+<p>我们可以通过 <strong>create_subprocess_exec()</strong> 函数从 asyncio 程序执行命令。</p>
+<p><strong>asyncio.create_subprocess_exec()</strong> 函数接受一个命令并直接执行它。</p>
+<p>这很有用，因为它允许在子进程中执行命令，并允许异步协程读取、写入和等待它。</p>
+<blockquote>
+<p>因为所有 asyncio 子进程函数都是异步的，并且 asyncio 提供了许多工具来使用这些函数，所以很容易并行执行和监视多个子进程。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>与 <strong>asyncio.create_subprocess_shell()</strong> 函数不同，<strong>asyncio.create_subprocess_exec()</strong> 不会使用 shell 执行命令。</p>
+<p>这意味着 shell 提供的功能（例如 shell 变量、脚本和通配符）在执行命令时不可用。</p>
+<p>这也意味着执行命令可能更安全，因为没有机会进行<a href="https://en.wikipedia.org/wiki/Code_injection#Shell_injection">shell注入</a>。</p>
+<p>现在我们知道了 <strong>asyncio.create_subprocess_exec()</strong> 的作用，让我们看看如何使用它。</p>
+</div>
+<div class="tabbed-block">
+<p>A <a href="https://en.wikipedia.org/wiki/Command-line_interface">command</a> is a program executed on the command line (terminal or command prompt). It is another program that is run directly.</p>
+<p>Common examples on Linux and macOS might be:</p>
+<ul>
+<li>‘ls‘ to list the contents of a directory</li>
+<li>‘cat‘ to report the content of a file</li>
+<li>‘date‘ to report the date</li>
+<li>‘echo‘ to report back a string</li>
+<li>‘sleep‘ to sleep for a number of seconds</li>
+</ul>
+<p>And so on.</p>
+<p>We can execute a command from an asyncio program via the <strong>create_subprocess_exec()</strong> function.</p>
+<p>The <strong>asyncio.create_subprocess_exec()</strong> function takes a command and executes it directly.</p>
+<p>This is helpful as it allows the command to be executed in a subprocess and for asyncio coroutines to read, write, and wait for it.</p>
+<blockquote>
+<p>Because all asyncio subprocess functions are asynchronous and asyncio provides many tools to work with such functions, it is easy to execute and monitor multiple subprocesses in parallel.</p>
+<p>— ASYNCIO SUBPROCESSES</p>
+</blockquote>
+<p>Unlike the <strong>asyncio.create_subprocess_shell()</strong> function, the <strong>asyncio.create_subprocess_exec()</strong> will not execute the command using the shell.</p>
+<p>This means that the capabilities provided by the shell, such as shell variables, scripting, and wildcards are not available when executing the command.</p>
+<p>It also means that executing the command may be more secure as there is no opportunity for a <a href="https://en.wikipedia.org/wiki/Code_injection#Shell_injection">shell injection</a>.</p>
+<p>Now that we know what <strong>asyncio.create_subprocess_exec()</strong> does, let’s look at how to use it.</p>
+</div>
+</div>
+</div>
+<h3 id="2021-如何使用-asyncio-的-create_subprocess_exec">20.2.1 如何使用 Asyncio 的 create_subprocess_exec()<a class="headerlink" href="#2021-如何使用-asyncio-的-create_subprocess_exec" title="Permanent link">&para;</a></h3>
+<p><strong>20.2.1 How to Use Asyncio create_subprocess_exec()</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.create_subprocess_exec">asyncio.create_subprocess_exec()</a> 函数将在子进程中执行给定的字符串命令。</p>
+<p>它返回一个表示子进程的 <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">asyncio.subprocess.Process</a> 对象。</p>
+<blockquote>
+<p>Process是一个高级包装器，允许与子进程通信并监视其完成情况。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">INTERACTING WITH SUBPROCESSES</a></p>
+</blockquote>
+<p>create_subprocess_exec() 函数是一个协程，这意味着我们必须等待它。 它会在子进程启动后返回，而不是在子进程完成时返回。</p>
+<p>例如:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 在子进程中执行命令</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>)
+</code></pre></div>
+<p>正在执行的命令的参数必须作为 <strong>create_subprocess_exec()</strong> 函数的后续参数提供。</p>
+<p>例如:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 在子进程中执行带参数的命令</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>, <span style="color: #BA2121">&#39;-l&#39;</span>)
+</code></pre></div>
+<p>我们可以通过等待 <strong>wait()</strong> 方法来等待子进程完成。</p>
+<p>例如:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 等待子进程终止</span>
+<span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>wait()
+</code></pre></div>
+<p>我们可以通过调用 <strong>terminate()</strong> 或 <strong>kill()</strong> 方法直接停止子进程，这将在子进程中引发一个信号。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 终止子进程</span>
+process<span style="color: #666666">.</span>terminate()
+</code></pre></div>
+<p>命令的输入和输出将由 <strong>stdin</strong>、<strong>stderr</strong> 和 <strong>stdout</strong> 处理。</p>
+<p>我们可以让 asyncio 程序处理子进程的输入或输出。</p>
+<p>这可以通过指定输入或输出流并指定要重定向的常量来实现，例如 <strong>asyncio.subprocess.PIPE</strong>。</p>
+<p>例如，我们可以将命令的输出重定向到 asyncio 程序：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 启动子进程并重定向输出</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>, stdout<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+</code></pre></div>
+<p>然后我们可以通过<strong>asyncio.subprocess.Process</strong>实例通过<strong>communicate()</strong>方法读取程序的输出。</p>
+<p>该方法是一个协程，必须等待。 它用于通过子进程发送和接收数据。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 从子进程读取数据</span>
+line <span style="color: #666666">=</span> process<span style="color: #666666">.</span>communicate()
+</code></pre></div>
+<p>我们还可以通过 <strong>communicate()</strong> 方法通过设置 <strong>“input”</strong> 参数（以字节为单位）将数据发送到子进程。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 启动子进程并重定向输入</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>, stdin<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+<span style="color: #3D7B7B; font-style: italic"># 向子进程发送数据</span>
+process<span style="color: #666666">.</span>communicate(<span style="color: #008000">input</span><span style="color: #666666">=</span><span style="color: #BA2121">b&#39;Hello</span><span style="color: #AA5D1F; font-weight: bold">\n</span><span style="color: #BA2121">&#39;</span>)
+</code></pre></div>
+<p>在背后， <strong>asyncio.subprocess.PIPE</strong> 将子进程配置为指向 <strong>StreamReader</strong> 或 <strong>StreamWriter</strong> 用于向子进程发送数据或从子进程发送数据，以及 <strong>communicate()</strong> 方法 将从配置的读取器读取或写入字节。</p>
+<blockquote>
+<p>如果 PIPE 传递给 stdin 参数，则 Process.stdin 属性将指向 <strong>StreamWriter</strong> 实例。 如果 PIPE 传递给 <strong>stdout</strong> 或 <strong>stderr</strong> 参数，则 <strong>Process.stdout</strong> 和 <strong>Process.stderr</strong> 属性将指向 <strong>StreamReader</strong> 实例。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>我们可以通过子进程通过 <code>stdin</code>、<code>stdout</code> 和 <code>stderr</code> 属性直接与 <strong>StreamReader</strong> 或 <strong>StreamWriter</strong> 交互。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 从子进程输出流中读取一行</span>
+line <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>stdout<span style="color: #666666">.</span>readline()
+</code></pre></div>
+<p>现在我们知道如何使用 <strong>create_subprocess_exec()</strong> 函数，让我们看一些有效的示例。</p>
+</div>
+<div class="tabbed-block">
+<p>The <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.create_subprocess_exec">asyncio.create_subprocess_exec()</a> function will execute a given string command in a subprocess.</p>
+<p>It returns a <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">asyncio.subprocess.Process</a> object that represents the subprocess.</p>
+<blockquote>
+<p>Process is a high-level wrapper that allows communicating with subprocesses and watching for their completion.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">INTERACTING WITH SUBPROCESSES</a></p>
+</blockquote>
+<p>The create_subprocess_exec() function is a coroutine, which means we must await it. It will return once the subprocess has been started, not when the subprocess is finished.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># execute a command in a subprocess</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>)
+</code></pre></div>
+<p>Arguments to the command being executed must be provided as subsequent arguments to the <strong>create_subprocess_exec()</strong> function.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># execute a command with arguments in a subprocess</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>, <span style="color: #BA2121">&#39;-l&#39;</span>)
+</code></pre></div>
+<p>We can wait for the subprocess to finish by awaiting the <strong>wait()</strong> method.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># wait for the subprocess to terminate</span>
+<span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>wait()
+</code></pre></div>
+<p>We can stop the subprocess directly by calling the <strong>terminate()</strong> or <strong>kill()</strong> methods, which will raise a signal in the subprocess.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># terminate the subprocess</span>
+process<span style="color: #666666">.</span>terminate()
+</code></pre></div>
+<p>The input and output of the command will be handled by <strong>stdin</strong>, <strong>stderr</strong>, and <strong>stdout</strong>.</p>
+<p>We can have the asyncio program handle the input or output for the subprocess.</p>
+<p>This can be achieved by specifying the input or output stream and specifying a constant to redirect, such as <strong>asyncio.subprocess.PIPE</strong>.</p>
+<p>For example, we can redirect the output of a command to the asyncio program:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># start a subprocess and redirect output</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>, stdout<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+</code></pre></div>
+<p>We can then read the output of the program via the <strong>asyncio.subprocess.Process</strong> instance via the <strong>communicate()</strong> method.</p>
+<p>This method is a coroutine and must be awaited. It is used to both send and receive data with the subprocess.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># read data from the subprocess</span>
+line <span style="color: #666666">=</span> process<span style="color: #666666">.</span>communicate()
+</code></pre></div>
+<p>We can also send data to the subprocess via the <strong>communicate()</strong> method by setting the <strong>“input”</strong> argument in bytes.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># start a subprocess and redirect input</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;ls&#39;</span>, stdin<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+<span style="color: #3D7B7B; font-style: italic"># send data to the subprocess</span>
+process<span style="color: #666666">.</span>communicate(<span style="color: #008000">input</span><span style="color: #666666">=</span><span style="color: #BA2121">b&#39;Hello</span><span style="color: #AA5D1F; font-weight: bold">\n</span><span style="color: #BA2121">&#39;</span>)
+</code></pre></div>
+<p>Behind the scenes the <strong>asyncio.subprocess.PIPE</strong> configures the subprocess to point to a <strong>StreamReader</strong> or <strong>StreamWriter</strong> for sending data to or from the subprocess, and the <strong>communicate()</strong> method will read or write bytes from the configured reader.</p>
+<blockquote>
+<p>If PIPE is passed to stdin argument, the Process.stdin attribute will point to a StreamWriter instance. If PIPE is passed to stdout or stderr arguments, the Process.stdout and Process.stderr attributes will point to StreamReader instances.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>We can interact with the <strong>StreamReader</strong> or <strong>StreamWriter</strong> directly via the subprocess via the stdin, stdout, and stderr attributes.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># read a line from the subprocess output stream</span>
+line <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>stdout<span style="color: #666666">.</span>readline()
+</code></pre></div>
+<p>Now that we know how to use the <strong>create_subprocess_exec()</strong> function, let’s look at some worked examples.</p>
+</div>
+</div>
+</div>
+<h3 id="2022-asyncio-的-create_subprocess_exec-的示例">20.2.2 Asyncio 的 create_subprocess_exec() 的示例<a class="headerlink" href="#2022-asyncio-的-create_subprocess_exec-的示例" title="Permanent link">&para;</a></h3>
+<p><strong>20.2.2 Example of Asyncio create_subprocess_exec()</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">中文</label><label for="__tabbed_5_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以探索如何在 asyncio 的子进程中运行命令。</p>
+<p>在此示例中，我们将执行 <a href="https://en.wikipedia.org/wiki/Echo_(command)">“echo”</a> 命令来报告一个字符串。</p>
+<p>echo 命令将直接在标准输出上报告提供的字符串。</p>
+<p>下面列出了完整的示例。</p>
+<p><strong>注意</strong>，此示例假设您有权访问 <strong>“echo”</strong> 命令，我不确定它是否适用于 Windows。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 使用 asyncio 作为子进程执行命令的示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 主协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 开始在子进程中执行命令</span>
+    process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;echo&#39;</span>, <span style="color: #BA2121">&#39;Hello World&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 报告子流程的详细信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">f&#39;subprocess: </span><span style="color: #A45A77; font-weight: bold">{</span>process<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 入口点</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>运行该示例首先创建 <strong>main()</strong> 协程，并将其作为 asyncio 程序的入口点执行。</p>
+<p><strong>main()</strong> 协程运行并调用 create_subprocess_exec() 函数来执行命令。</p>
+<p>创建子进程时，<strong>main()</strong> 协程会挂起。 返回一个 Process 实例。</p>
+<p><strong>main()</strong> 协程恢复并报告子进程的详细信息。 <strong>main()</strong> 进程终止，并且 asyncio 程序终止。</p>
+<p>echo 命令的输出在命令行上报告。</p>
+<p>这突出显示了我们如何从 asyncio 程序执行命令。</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Hello World
+subprocess: &lt;Process 50249&gt;
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>We can explore how to run a command in a subprocess from asyncio.</p>
+<p>In this example, we will execute the <a href="https://en.wikipedia.org/wiki/Echo_(command)">“echo”</a> command to report back a string.</p>
+<p>The echo command will report the provided string on standard output directly.</p>
+<p>The complete example is listed below.</p>
+<p><strong>Note</strong>, this example assumes you have access to the <strong>“echo”</strong> command, I’m not sure it will work on Windows.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># example of executing a command as a subprocess with asyncio</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># main coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># start executing a command in a subprocess</span>
+    process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_exec(<span style="color: #BA2121">&#39;echo&#39;</span>, <span style="color: #BA2121">&#39;Hello World&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># report the details of the subprocess</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">f&#39;subprocess: </span><span style="color: #A45A77; font-weight: bold">{</span>process<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># entry point</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>Running the example first creates the <strong>main()</strong> coroutine and executes it as the entry point into the asyncio program.</p>
+<p>The <strong>main()</strong> coroutine runs and calls the create_subprocess_exec() function to execute a command.</p>
+<p>The <strong>main()</strong> coroutine suspends while the subprocess is created. A Process instance is returned.</p>
+<p>The <strong>main()</strong> coroutine resumes and reports the details of the subprocess. The <strong>main()</strong> process terminates and the asyncio program terminates.</p>
+<p>The output of the echo command is reported on the command line.</p>
+<p>This highlights how we can execute a command from an asyncio program.</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Hello World
+subprocess: &lt;Process 50249&gt;
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="203-如何跟shell一起运行一个命令">20.3 如何跟shell一起运行一个命令<a class="headerlink" href="#203-如何跟shell一起运行一个命令" title="Permanent link">&para;</a></h2>
+<p><strong>How to Run a Command Via the Shell</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">中文</label><label for="__tabbed_6_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以使用<a href="https://en.wikipedia.org/wiki/Shell_(computing)">shell</a>执行命令。</p>
+<p>shell 是命令行的用户界面，称为命令行解释器 (CLI)。</p>
+<p>它将代表用户解释并执行命令。</p>
+<p>它还提供诸如用于脚本、通配符、管道、shell 变量（例如 PATH）等的原始编程语言等功能。</p>
+<p>例如，我们可以将一个命令的输出重定向为另一个命令的输入，例如将“<strong>/etc/services</strong>”文件的内容重定向到字数统计“wc”命令并统计行数：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>cat <span style="color: #666666">/</span>etc<span style="color: #666666">/</span>services <span style="color: #666666">|</span> wc <span style="color: #666666">-</span>l
+</code></pre></div>
+<p>基于 Unix 的操作系统中的 shell 示例包括：</p>
+<ul>
+<li>‘sh’</li>
+<li>‘bash’</li>
+<li>‘zsh’</li>
+<li>等等。</li>
+</ul>
+<p>在 Windows 上，shell 可能是 <a href="https://en.wikipedia.org/wiki/Cmd.exe">cmd.exe</a>。</p>
+<p>请参阅这个很棒的命令行 shell 列表：</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/List_of_command-line_interpreters">命令行解释器列表</a>, Wikipedia</li>
+</ul>
+<p>shell已经在运行，它被用来启动Python程序。</p>
+<p>您无需执行任何特殊操作即可获取或访问 shell。</p>
+<p>我们可以通过 <strong>create_subprocess_shell()</strong> 函数从 asyncio 程序执行命令。</p>
+<p><strong>asyncio.create_subprocess_shell()</strong> 函数接受一个命令并使用当前用户 shell 执行它。</p>
+<p>这很有用，因为它不仅允许执行命令，还允许使用 shell 的功能，例如重定向、通配符等。</p>
+<blockquote>
+<p>… 指定的命令将通过 shell 执行。 如果您使用 Python 主要是为了增强它在大多数系统 shell 上提供的控制流，并且仍然希望方便地访问其他 shell 功能（例如 shell 管道、文件名通配符、环境变量扩展以及将 ~ 扩展到用户主目录），那么这会很有用。</p>
+<p>— <a href="https://docs.python.org/3/library/subprocess.html">SUBPROCESS — SUBPROCESS MANAGEMENT</a></p>
+</blockquote>
+<p>该命令将在执行 asyncio 程序的进程的子进程中执行。</p>
+<p>重要的是，asyncio 程序能够与子进程异步交互，例如 通过协程。</p>
+<blockquote>
+<p>因为所有 asyncio 子进程函数都是异步的，并且 asyncio 提供了许多工具来使用这些函数，所以很容易并行执行和监视多个子进程。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>通过 shell 而不是直接执行命令时可能存在安全考虑。</p>
+<p>这是因为执行命令的请求和正在执行的命令之间至少存在一层间接和解释，从而允许可能的恶意注入。</p>
+<blockquote>
+<p>重要的应用程序有责任确保所有空格和特殊字符都被正确引用，以避免 shell 注入漏洞。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>现在我们知道了 <strong>asyncio.create_subprocess_shell()</strong> 的作用，让我们看看如何使用它。</p>
+</div>
+<div class="tabbed-block">
+<p>We can execute commands using the <a href="https://en.wikipedia.org/wiki/Shell_(computing)">shell</a>.</p>
+<p>The shell is a user interface for the command line, called a command line interpreter (CLI).</p>
+<p>It will interpret and execute commands on behalf of the user.</p>
+<p>It also offers features such as a primitive programming language for scripting, wildcards, piping, shell variables (e.g. PATH), and more.</p>
+<p>For example, we can redirect the output of one command as input to another command, such as the contents of the “<strong>/etc/services</strong>” file into the word count “wc” command and count the number of lines:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>cat <span style="color: #666666">/</span>etc<span style="color: #666666">/</span>services <span style="color: #666666">|</span> wc <span style="color: #666666">-</span>l
+</code></pre></div>
+<p>Examples of shells in the Unix based operating systems include:</p>
+<ul>
+<li>‘sh’</li>
+<li>‘bash’</li>
+<li>‘zsh’</li>
+<li>And so on.</li>
+</ul>
+<p>On Windows, the shell is probably <a href="https://en.wikipedia.org/wiki/Cmd.exe">cmd.exe</a>.</p>
+<p>See this great list of command line shells:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/List_of_command-line_interpreters">List of command-line interpreters</a>, Wikipedia</li>
+</ul>
+<p>The shell is already running, it was used to start the Python program.</p>
+<p>You don’t need to do anything special to get or have access to the shell.</p>
+<p>We can execute a command from an asyncio program via the <strong>create_subprocess_shell()</strong> function.</p>
+<p>The <strong>asyncio.create_subprocess_shell()</strong> function takes a command and executes it using the current user shell.</p>
+<p>This is helpful as it not only allows the command to be executed, but allows the capabilities of the shell to be used, such as redirection, wildcards and more.</p>
+<blockquote>
+<p>… the specified command will be executed through the shell. This can be useful if you are using Python primarily for the enhanced control flow it offers over most system shells and still want convenient access to other shell features such as shell pipes, filename wildcards, environment variable expansion, and expansion of ~ to a user’s home directory.</p>
+<p>— <a href="https://docs.python.org/3/library/subprocess.html">SUBPROCESS — SUBPROCESS MANAGEMENT</a></p>
+</blockquote>
+<p>The command will be executed in a subprocess of the process executing the asyncio program.</p>
+<p>Importantly, the asyncio program is able to interact with the subprocess asynchronously, e.g. via coroutines.</p>
+<blockquote>
+<p>Because all asyncio subprocess functions are asynchronous and asyncio provides many tools to work with such functions, it is easy to execute and monitor multiple subprocesses in parallel.</p>
+<p>— ASYNCIO SUBPROCESSES</p>
+</blockquote>
+<p>There can be security considerations when executing a command via the shell instead of directly.</p>
+<p>This is because there is at least one level of indirection and interpretation between the request to execute the command and the command being executed, allowing possible malicious injection.</p>
+<blockquote>
+<p>Important It is the application’s responsibility to ensure that all whitespace and special characters are quoted appropriately to avoid shell injection vulnerabilities.</p>
+<p>— ASYNCIO SUBPROCESSES</p>
+</blockquote>
+<p>Now that we know what <strong>asyncio.create_subprocess_shell()</strong> does, let’s look at how to use it.</p>
+</div>
+</div>
+</div>
+<h3 id="2031-如何使用-asyncio-的-create_subprocess_shell">20.3.1 如何使用 Asyncio 的 create_subprocess_shell()<a class="headerlink" href="#2031-如何使用-asyncio-的-create_subprocess_shell" title="Permanent link">&para;</a></h3>
+<p><strong>20.3.1 How to Use Asyncio create_subprocess_shell()</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">中文</label><label for="__tabbed_7_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.create_subprocess_shell">asyncio.create_subprocess_shell()</a> 函数将通过当前 shell 执行给定的字符串命令。</p>
+<p>它返回一个表示进程的 <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">asyncio.subprocess.Process</a> 对象。</p>
+<p>它与我们在上一节中看到的 <strong>create_subprocess_shell()</strong> 函数非常相似。 尽管如此，我们将回顾如何使用该函数并通过 <strong>Process</strong> 实例与流程交互（如果您直接跳到本节）。</p>
+<p><strong>create_subprocess_shell()</strong> 函数是一个协程，这意味着我们必须等待它。 它会在子进程启动后返回，而不是在子进程完成时返回。</p>
+<p>例如:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 启动一个子进程</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;ls&#39;</span>)
+</code></pre></div>
+<p>我们可以通过等待 <strong>wait()</strong> 方法来等待子进程完成。</p>
+<p>例如:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 等待子进程终止</span>
+<span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>wait()
+</code></pre></div>
+<p>我们可以通过调用 <strong>terminate()</strong> 或 <strong>kill()</strong> 方法直接停止子进程，这将在子进程中引发一个信号。</p>
+<p>命令的输入和输出将由 shell 处理，例如 <strong>标准输入</strong>、<strong>标准错误</strong>和<strong>标准输出</strong>。</p>
+<p>我们可以让 asyncio 程序处理子进程的输入或输出。</p>
+<p>这可以通过指定输入或输出流并指定要重定向的常量来实现，例如 <strong>asyncio.subprocess.PIPE</strong>。</p>
+<p>例如，我们可以将命令的输出重定向到 asyncio 程序：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 启动子进程并重定向输出</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;ls&#39;</span>, stdout<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+</code></pre></div>
+<p>然后我们可以通过<strong>asyncio.subprocess.Process</strong>实例通过<strong>communicate()</strong>方法读取程序的输出。</p>
+<p>该方法是一个协程，必须等待。 它用于通过子进程发送和接收数据。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 从子进程读取数据</span>
+line <span style="color: #666666">=</span> process<span style="color: #666666">.</span>communicate()
+</code></pre></div>
+<p>我们还可以通过以字节为单位设置“input”参数，通过 <strong>communicate()</strong> 方法将数据发送到子进程。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 启动子进程并重定向输入</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;ls&#39;</span>, stdin<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+<span style="color: #3D7B7B; font-style: italic"># 向子进程发送数据</span>
+process<span style="color: #666666">.</span>communicate(<span style="color: #008000">input</span><span style="color: #666666">=</span><span style="color: #BA2121">b&#39;Hello</span><span style="color: #AA5D1F; font-weight: bold">\n</span><span style="color: #BA2121">&#39;</span>)
+</code></pre></div>
+<p>在背后， <strong>asyncio.subprocess.PIPE</strong> 将子进程配置为指向 <strong>StreamReader</strong> 或 <strong>StreamWriter</strong> 用于向子进程发送数据或从子进程发送数据，以及 <strong>communicate()</strong> 方法 将从配置的读取器读取或写入字节。</p>
+<blockquote>
+<p>如果 PIPE 传递给 stdin 参数，则 Process.stdin 属性将指向 StreamWriter 实例。 如果 PIPE 传递给 stdout 或 stderr 参数，则 Process.stdout 和 Process.stderr 属性将指向 StreamReader 实例。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>我们可以通过子进程的 <code>stdin</code>、<code>stdout</code> 和 <code>stderr</code> 属性直接与 <strong>StreamReader</strong> 或 <strong>StreamWriter</strong> 交互。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 从子进程输出流中读取一行</span>
+line <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>stdout<span style="color: #666666">.</span>readline()
+</code></pre></div>
+<p>现在我们知道如何使用 <strong>create_subprocess_shell()</strong> 函数，让我们看一些有效的示例。</p>
+</div>
+<div class="tabbed-block">
+<p>The <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.create_subprocess_shell">asyncio.create_subprocess_shell()</a> function will execute a given string command via the current shell.</p>
+<p>It returns a <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process">asyncio.subprocess.Process</a> object that represents the process.</p>
+<p>It is very similar to the <strong>create_subprocess_shell()</strong> function we saw in a previous section. Nevertheless, we will review how to use the function and interact with the process via the Process instance (in case you skipped straight to this section).</p>
+<p>The <strong>create_subprocess_shell()</strong> function is a coroutine, which means we must await it. It will return once the subprocess has been started, not when the subprocess is finished.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># start a subprocess</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;ls&#39;</span>)
+We can wait <span style="color: #008000; font-weight: bold">for</span> the subprocess to finish by awaiting the <span style="color: #666666">**</span>wait()<span style="color: #666666">**</span> method<span style="color: #666666">.</span>
+</code></pre></div>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># wait for the subprocess to terminate</span>
+<span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>wait()
+</code></pre></div>
+<p>We can stop the subprocess directly by calling the <strong>terminate()</strong> or <strong>kill()</strong> methods, which will raise a signal in the subprocess.</p>
+<p>The input and output of the command will be handled by the shell, e.g. <strong>stdin</strong>, <strong>stderr</strong>, and <strong>stdout</strong>.</p>
+<p>We can have the asyncio program handle the input or output for the subprocess.</p>
+<p>This can be achieved by specifying the input or output stream and specifying a constant to redirect, such as <strong>asyncio.subprocess.PIPE</strong>.</p>
+<p>For example, we can redirect the output of a command to the asyncio program:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># start a subprocess and redirect output</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;ls&#39;</span>, stdout<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+</code></pre></div>
+<p>We can then read the output of the program via the <strong>asyncio.subprocess.Process</strong> instance via the <strong>communicate()</strong> method.</p>
+<p>This method is a coroutine and must be awaited. It is used to both send and receive data with the subprocess.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># read data from the subprocess</span>
+line <span style="color: #666666">=</span> process<span style="color: #666666">.</span>communicate()
+</code></pre></div>
+<p>We can also send data to the subprocess via the <strong>communicate()</strong> method by setting the “input” argument in bytes.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># start a subprocess and redirect input</span>
+process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;ls&#39;</span>, stdin<span style="color: #666666">=</span>asyncio<span style="color: #666666">.</span>subprocess<span style="color: #666666">.</span>PIPE)
+<span style="color: #3D7B7B; font-style: italic"># send data to the subprocess</span>
+process<span style="color: #666666">.</span>communicate(<span style="color: #008000">input</span><span style="color: #666666">=</span><span style="color: #BA2121">b&#39;Hello</span><span style="color: #AA5D1F; font-weight: bold">\n</span><span style="color: #BA2121">&#39;</span>)
+</code></pre></div>
+<p>Behind the scenes the <strong>asyncio.subprocess.PIPE</strong> configures the subprocess to point to a <strong>StreamReader</strong> or <strong>StreamWriter</strong> for sending data to or from the subprocess, and the <strong>communicate()</strong> method will read or write bytes from the configured reader.</p>
+<blockquote>
+<p>If PIPE is passed to stdin argument, the Process.stdin attribute will point to a StreamWriter instance. If PIPE is passed to stdout or stderr arguments, the Process.stdout and Process.stderr attributes will point to StreamReader instances.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-subprocess.html">ASYNCIO SUBPROCESSES</a></p>
+</blockquote>
+<p>We can interact with the <strong>StreamReader</strong> or <strong>StreamWriter</strong> directly via the subprocess via the stdin, stdout, and stderr attributes.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># read a line from the subprocess output stream</span>
+line <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> process<span style="color: #666666">.</span>stdout<span style="color: #666666">.</span>readline()
+</code></pre></div>
+<p>Now that we know how to use the <strong>create_subprocess_shell()</strong> function, let’s look at some worked examples.</p>
+</div>
+</div>
+</div>
+<h3 id="2032-asyncio-的-create_subprocess_shell-的示例">20.3.2 Asyncio 的 create_subprocess_shell() 的示例<a class="headerlink" href="#2032-asyncio-的-create_subprocess_shell-的示例" title="Permanent link">&para;</a></h3>
+<p><strong>20.3.2 Example of Asyncio create_subprocess_shell()</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">中文</label><label for="__tabbed_8_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以探索如何使用 shell 从 asyncio 的子进程中运行命令。</p>
+<p>在此示例中，我们将执行 <a href="https://en.wikipedia.org/wiki/Echo_(command)">“echo”</a> 命令来报告一个字符串。</p>
+<p>echo 命令将直接在标准输出上报告提供的字符串。</p>
+<p>下面列出了完整的示例。</p>
+<p>请注意，此示例假设您有权访问“echo”命令，我不确定它是否适用于 Windows。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 使用 asyncio 作为子进程执行 shell 命令的示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 主协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 开始在子进程中执行 shell 命令</span>
+    process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;echo Hello World&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 报告子流程的详细信息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">f&#39;subprocess: </span><span style="color: #A45A77; font-weight: bold">{</span>process<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 入口点</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>运行该示例首先创建 <strong>main()</strong> 协程并将其作为 asyncio 程序的入口点执行。</p>
+<p><strong>main()</strong> 协程运行并调用 <strong>create_subprocess_shell()</strong> 函数来执行命令。</p>
+<p><strong>main()</strong> 协程在子进程创建时挂起。 返回一个 <a href="https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.subprocess.Process"><strong>Process</strong></a> 实例。</p>
+<p><strong>main()</strong> 协程恢复并报告子流程的详细信息。 <strong>main()</strong> 进程终止，asyncio 程序终止。</p>
+<p>echo 命令的输出在命令行上报告。</p>
+<p>这突出显示了我们如何使用 asyncio 程序中的 shell 执行命令。</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>subprocess: &lt;Process 43916&gt;
+Hello World
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>We can explore how to run a command in a subprocess from asyncio using the shell.</p>
+<p>In this example, we will execute the <a href="https://en.wikipedia.org/wiki/Echo_(command)">“echo”</a> command to report back a string.</p>
+<p>The echo command will report the provided string on standard output directly.</p>
+<p>The complete example is listed below.</p>
+<p>Note, this example assumes you have access to the “echo” command, I’m not sure it will work on Windows.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># example of executing a shell command as a subprocess with asyncio</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># main coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># start executing a shell command in a subprocess</span>
+    process <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>create_subprocess_shell(<span style="color: #BA2121">&#39;echo Hello World&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># report the details of the subprocess</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">f&#39;subprocess: </span><span style="color: #A45A77; font-weight: bold">{</span>process<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># entry point</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>Running the example first creates the main() coroutine and executes it as the entry point into the asyncio program.</p>
+<p>The main() coroutine runs and calls the create_subprocess_shell() function to execute a command.</p>
+<p>The main() coroutine suspends while the subprocess is created. A Process instance is returned.</p>
+<p>The main() coroutine resumes and reports the details of the subprocess. The main() process terminates and the asyncio program terminates.</p>
+<p>The output of the echo command is reported on the command line.</p>
+<p>This highlights how we can execute a command using the shell from an asyncio program.</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>subprocess: &lt;Process 43916&gt;
+Hello World
+</code></pre></div>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

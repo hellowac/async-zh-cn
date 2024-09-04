@@ -1,0 +1,1742 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c9/">
+      
+      
+        <link rel="next" href="../c11/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>10. 同时运行多个协程 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#10-同时运行多个协程" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              10. 同时运行多个协程
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#101-什么是-asyncio-gather" class="md-nav__link">
+    10.1 什么是 Asyncio Gather()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#102-如何使用-asyncio-gather" class="md-nav__link">
+    10.2 如何使用 Asyncio Gather()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#103-对于列表中的多个协程的-gather-示例" class="md-nav__link">
+    10.3 对于列表中的多个协程的 Gather() 示例
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#101-什么是-asyncio-gather" class="md-nav__link">
+    10.1 什么是 Asyncio Gather()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#102-如何使用-asyncio-gather" class="md-nav__link">
+    10.2 如何使用 Asyncio Gather()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#103-对于列表中的多个协程的-gather-示例" class="md-nav__link">
+    10.3 对于列表中的多个协程的 Gather() 示例
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="10-同时运行多个协程">10. 同时运行多个协程<a class="headerlink" href="#10-同时运行多个协程" title="Permanent link">&para;</a></h1>
+<p><strong>10. Run Many Coroutines Concurrently</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>asyncio 的一个好处是我们可以同时运行许多协程。</p>
+<p>这些协程可以在一个组中创建并存储，然后同时一起执行。</p>
+<p>这可以使用 <strong>asyncio.gather()</strong> 函数来实现。</p>
+<p>让我们仔细看看。</p>
+</div>
+<div class="tabbed-block">
+<p>A benefit of asyncio is that we can run many coroutines concurrently.</p>
+<p>These coroutines can be created in a group and stored, then executed all together at the same time.</p>
+<p>This can be achieved using the <strong>asyncio.gather()</strong> function.</p>
+<p>Let’s take a closer look.</p>
+</div>
+</div>
+</div>
+<h2 id="101-什么是-asyncio-gather">10.1 什么是 Asyncio Gather()<a class="headerlink" href="#101-什么是-asyncio-gather" title="Permanent link">&para;</a></h2>
+<p><strong>10.1 What is Asyncio gather()</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.gather">asyncio.gather()</a> 模块函数允许调用者将多个可等待项组合在一起。</p>
+<p>一旦分组，可等待项就可以并发执行、等待和取消。</p>
+<blockquote>
+<p>同时运行 aws 序列中的可等待对象。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-task.html">COROUTINES AND TASKS</a></p>
+</blockquote>
+<p>对于分组和执行多个协程或多个任务来说，它是一个有用的实用函数。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 运行可等待对象集合</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(coro1(), asyncio<span style="color: #666666">.</span>create_task(coro2()))
+</code></pre></div>
+<p>在我们可能预先创建许多任务或协程，然后希望一次执行所有任务或协程并等待它们全部完成然后再继续的情况下，我们可以使用 <strong>asyncio.gather()</strong> 函数。</p>
+<p>这是一种可能的情况，其中需要许多类似任务的结果，例如 具有不同数据的相同任务或协程。</p>
+<p>可等待对象可以并发执行，返回结果，并且主程序可以通过使用它所依赖的结果来恢复。</p>
+<p><strong>gather()</strong> 函数比简单地等待任务完成更强大。</p>
+<p>它允许将一组可等待对象视为单个可等待对象。</p>
+<p>这允许：</p>
+<ul>
+<li>通过 <strong>await</strong> 表达式执行并等待组中的所有可等待任务完成。</li>
+<li>从所有分组的可等待项中获取结果，以便稍后通过 <strong>result()</strong> 方法检索。</li>
+<li>通过 <strong>cancel()</strong> 方法取消的可等待组。</li>
+<li>检查组中的所有可等待项是否已通过 <strong>done()</strong> 方法完成。</li>
+<li>仅当组中的所有任务完成时才执行回调函数。</li>
+</ul>
+<p>和更多。</p>
+</div>
+<div class="tabbed-block">
+<p>The <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.gather">asyncio.gather()</a> module function allows the caller to group multiple awaitables together.</p>
+<p>Once grouped, the awaitables can be executed concurrently, awaited, and canceled.</p>
+<blockquote>
+<p>Run awaitable objects in the aws sequence concurrently.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-task.html">COROUTINES AND TASKS</a></p>
+</blockquote>
+<p>It is a helpful utility function for both grouping and executing multiple coroutines or multiple tasks.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># run a collection of awaitables</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(coro1(), asyncio<span style="color: #666666">.</span>create_task(coro2()))
+</code></pre></div>
+<p>We may use the <strong>asyncio.gather()</strong> function in situations where we may create many tasks or coroutines up-front and then wish to execute them all at once and wait for them all to complete before continuing on.</p>
+<p>This is a likely situation where the result is required from many like-tasks, e.g. same task or coroutine with different data.</p>
+<p>The awaitables can be executed concurrently, results returned, and the main program can resume by making use of the results on which it is dependent.</p>
+<p>The <strong>gather()</strong> function is more powerful than simply waiting for tasks to complete.</p>
+<p>It allows a group of awaitables to be treated as a single awaitable.</p>
+<p>This allows:</p>
+<ul>
+<li>Executing and waiting for all awaitables in the group to be done via an await expression.</li>
+<li>Getting results from all grouped awaitables to be retrieved later via the result() method.</li>
+<li>The group of awaitables to be canceled via the cancel() method.</li>
+<li>Checking if all awaitables in the group are done via the done() method.</li>
+<li>Executing callback functions only when all tasks in the group are done.</li>
+</ul>
+<p>And more.</p>
+</div>
+</div>
+</div>
+<h2 id="102-如何使用-asyncio-gather">10.2 如何使用 Asyncio Gather()<a class="headerlink" href="#102-如何使用-asyncio-gather" title="Permanent link">&para;</a></h2>
+<p><strong>10.2 How to use Asyncio gather()</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>在本节中，我们将仔细研究如何使用 <strong>asyncio.gather()</strong> 函数。</p>
+<p><strong>asyncio.gather()</strong> 函数采用一个或多个可等待项作为参数。</p>
+<p>回想一下，可等待的可能是协程、<strong>Future</strong> 或 <strong>Task</strong>。</p>
+<p>因此，我们可以调用 <strong>gather()</strong> 函数：</p>
+<ul>
+<li>多项任务</li>
+<li>多个协程</li>
+<li>任务和协程的混合</li>
+</ul>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 执行多个协程</span>
+asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+</code></pre></div>
+<p>如果将 <strong>Task</strong> 对象提供给 <strong>gather()</strong>，它们将已经在运行，因为 <strong>Task</strong> 是作为创建的一部分进行调度的。</p>
+<p><strong>asyncio.gather()</strong> 函数将可等待对象作为位置参数。</p>
+<p>我们无法创建可等待项的列表或集合并将其提供给收集，因为这会导致错误。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 无法直接提供可等待列表</span>
+asyncio<span style="color: #666666">.</span>gather([coro1(), coro2()])
+</code></pre></div>
+<p>如果首先使用星号运算符 (*) 将其解包到单独的表达式中，则可以提供可等待列表。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 收集一份已解压的等待列表</span>
+asyncio<span style="color: #666666">.</span>gather(<span style="color: #666666">*</span>[coro1(), coro2()])
+</code></pre></div>
+<p>如果向 <strong>gather()</strong> 提供协程，它们会自动包装在 <strong>Task</strong> 对象中。</p>
+<p><strong>gather()</strong> 函数不会阻塞。</p>
+<p>相反，它返回一个代表可等待组的 <a href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future"><strong>asyncio.Future</strong></a> 对象。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 得到一个代表多个可等待对象的Future对象</span>
+group <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+</code></pre></div>
+<p>一旦创建了 <strong>Future</strong> 对象，它就会在事件循环中自动调度。</p>
+<p>可等待代表组，组中的所有可等待将尽快执行。</p>
+<p>这意味着如果调用者没有执行任何其他操作，则预定的等待组将运行（假设调用者挂起）。</p>
+<p>这也意味着您不必等待从 <strong>gather()</strong> 返回的 <strong>Future</strong>。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 得到一个代表多个可等待对象的Future对象</span>
+group <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+<span style="color: #3D7B7B; font-style: italic"># 挂起并等待一段时间，该组可能正在执行..</span>
+<span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">10</span>)
+</code></pre></div>
+<p>可以等待返回的 Future 对象，它将等待组中的所有可等待任务完成。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 运行可等待对象组</span>
+<span style="color: #008000; font-weight: bold">await</span> group
+</code></pre></div>
+<p>等待从 <strong>gather()</strong> 返回的 Future 将返回可等待项的返回值列表。</p>
+<p>如果可等待项不返回值，则此列表将包含默认的 <strong>“None”</strong> 返回值。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 运行可等待组并获取返回值</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> group
+</code></pre></div>
+<p>这通常在一行中执行。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 在一行中运行任务并获取结果</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>In this section, we will take a closer look at how we might use the <strong>asyncio.gather()</strong> function.</p>
+<p>The <strong>asyncio.gather()</strong> function takes one or more awaitables as arguments.</p>
+<p>Recall an awaitable may be a coroutine, a <strong>Future</strong> or a <strong>Task</strong>.</p>
+<p>Therefore, we can call the <strong>gather()</strong> function with:</p>
+<ul>
+<li>Multiple tasks</li>
+<li>Multiple coroutines</li>
+<li>Mixture of tasks and coroutines</li>
+</ul>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># execute multiple coroutines</span>
+asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+</code></pre></div>
+<p>If <strong>Task</strong> objects are provided to <strong>gather()</strong>, they will already be running because <strong>Tasks</strong> are scheduled as part of being created.</p>
+<p>The <strong>asyncio.gather()</strong> function takes awaitables as position arguments.</p>
+<p>We cannot create a list or collection of awaitables and provide it to gather, as this will result in an error.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># cannot provide a list of awaitables directly</span>
+asyncio<span style="color: #666666">.</span>gather([coro1(), coro2()])
+</code></pre></div>
+<p>A list of awaitables can be provided if it is first unpacked into separate expressions using the star operator (*).</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># gather with an unpacked list of awaitables</span>
+asyncio<span style="color: #666666">.</span>gather(<span style="color: #666666">*</span>[coro1(), coro2()])
+</code></pre></div>
+<p>If coroutines are provided to <strong>gather()</strong>, they are wrapped in <strong>Task</strong> objects automatically.</p>
+<p>The <strong>gather()</strong> function does not block.</p>
+<p>Instead, it returns an <a href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future"><strong>asyncio.Future</strong></a> object that represents the group of awaitables.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># get a future that represents multiple awaitables</span>
+group <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+</code></pre></div>
+<p>Once the <strong>Future</strong> object is created it is scheduled automatically within the event loop.</p>
+<p>The awaitable represents the group, and all awaitables in the group will execute as soon as they are able.</p>
+<p>This means that if the caller did nothing else, the scheduled group of awaitables will run (assuming the caller suspends).</p>
+<p>It also means that you do not have to await the <strong>Future</strong> that is returned from <strong>gather()</strong>.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># get a future that represents multiple awaitables</span>
+group <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+<span style="color: #3D7B7B; font-style: italic"># suspend and wait a while, the group may be executing..</span>
+<span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">10</span>)
+</code></pre></div>
+<p>The returned Future object can be awaited which will wait for all awaitables in the group to be done.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># run the group of awaitables</span>
+<span style="color: #008000; font-weight: bold">await</span> group
+</code></pre></div>
+<p>Awaiting the Future returned from <strong>gather()</strong> will return a list of return values from the awaitables.</p>
+<p>If the awaitables do not return a value, then this list will contain the default <strong>“None”</strong> return value.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># run the group of awaitables and get return values</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> group
+</code></pre></div>
+<p>This is more commonly performed in one line.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># run tasks and get results on one line</span>
+results <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(coro1(), coro2())
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="103-对于列表中的多个协程的-gather-示例">10.3 对于列表中的多个协程的 Gather() 示例<a class="headerlink" href="#103-对于列表中的多个协程的-gather-示例" title="Permanent link">&para;</a></h2>
+<p><strong>10.3 Example of gather() For Many Coroutines in a List</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>预先创建多个协程然后稍后收集它们是很常见的。</p>
+<p>这允许程序准备要并发执行的任务，然后立即触发它们的并发执行并等待它们完成。</p>
+<p>我们可以手动或使用列表理解将许多协程收集到一个列表中。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建许多协程</span>
+coros <span style="color: #666666">=</span> [task_coro(i) <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">10</span>)]
+</code></pre></div>
+<p>然后我们可以对列表中的所有协程调用<strong>gather()</strong>。</p>
+<p>协程列表不能直接提供给 <strong>gather()</strong> 函数，因为这会导致错误。</p>
+<p>相反， <strong>gather()</strong> 函数要求将每个可等待项作为单独的位置参数提供。</p>
+<p>这可以通过将列表展开为单独的表达式并将它们传递给 <strong>gather()</strong> 函数来实现。 星号运算符（*）将为我们执行此操作。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 运行任务</span>
+<span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(<span style="color: #666666">*</span>coros)
+</code></pre></div>
+<p>将它们结合在一起，下面列出了使用 Gather() 运行预先准备的协程列表的完整示例。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 收集列表中许多协程的示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 用于任务的协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task_coro</span>(value):
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">f&#39;&gt;task </span><span style="color: #A45A77; font-weight: bold">{</span>value<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121"> executing&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 睡一会儿</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine used for the entry point</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;main starting&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 创建许多协程</span>
+    coros <span style="color: #666666">=</span> [task_coro(i) <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">10</span>)]
+    <span style="color: #3D7B7B; font-style: italic"># 运行任务</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(<span style="color: #666666">*</span>coros)
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;main done&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 启动异步程序</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>运行该示例将执行 <strong>main()</strong> 协程作为程序的入口点。</p>
+<p>然后，<strong>main()</strong> 协程使用列表理解创建一个包含 10 个协程对象的列表。</p>
+<p>然后将该列表提供给 <strong>gather()</strong> 函数，并使用星号运算符将其解包为 10 个单独的表达式。</p>
+<p>然后，<strong>main()</strong> 协程等待从调用 Gather() 返回的 Future 对象，挂起并等待所有已调度的协程完成其执行。</p>
+<p>协程会尽快运行，报告其独特的消息并在终止前休眠。</p>
+<p>仅当组中的所有协程完成后， <strong>main()</strong> 协程才会恢复并报告其最终消息。</p>
+<p>这强调了我们如何准备协程集合并将它们作为单独的表达式提供给 <strong>gather()</strong> 函数。</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>main starting
+&gt;task 0 executing
+&gt;task 1 executing
+&gt;task 2 executing
+&gt;task 3 executing
+&gt;task 4 executing
+&gt;task 5 executing
+&gt;task 6 executing
+&gt;task 7 executing
+&gt;task 8 executing
+&gt;task 9 executing
+main done
+</code></pre></div>
+<p>您可以在教程中了解有关如何使用 Gather() 函数的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-gather/">如何在 Python 中使用 asyncio.gather()</a></li>
+</ul>
+<p>接下来，我们将探讨如何等待一组异步任务。</p>
+</div>
+<div class="tabbed-block">
+<p>It is common to create multiple coroutines beforehand and then gather them later.</p>
+<p>This allows a program to prepare the tasks that are to be executed concurrently and then trigger their concurrent execution all at once and wait for them to complete.</p>
+<p>We can collect many coroutines together into a list either manually or using a list comprehension.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create many coroutines</span>
+coros <span style="color: #666666">=</span> [task_coro(i) <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">10</span>)]
+</code></pre></div>
+<p>We can then call <strong>gather()</strong> with all coroutines in the list.</p>
+<p>The list of coroutines cannot be provided directly to the <strong>gather()</strong> function as this will result in an error.</p>
+<p>Instead, the <strong>gather()</strong> function requires each awaitable to be provided as a separate positional argument.</p>
+<p>This can be achieved by unwrapping the list into separate expressions and passing them to the <strong>gather()</strong> function. The star operator (*) will perform this operation for us.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># run the tasks</span>
+<span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(<span style="color: #666666">*</span>coros)
+Tying this together, the complete example of running a <span style="color: #008000">list</span> of pre<span style="color: #666666">-</span>prepared coroutines <span style="color: #008000; font-weight: bold">with</span> gather() <span style="color: #AA22FF; font-weight: bold">is</span> listed below<span style="color: #666666">.</span>
+
+<span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># example of gather for many coroutines in a list</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine used for a task</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">task_coro</span>(value):
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">f&#39;&gt;task </span><span style="color: #A45A77; font-weight: bold">{</span>value<span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121"> executing&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># sleep for a moment</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># coroutine used for the entry point</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;main starting&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># create many coroutines</span>
+    coros <span style="color: #666666">=</span> [task_coro(i) <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #666666">10</span>)]
+    <span style="color: #3D7B7B; font-style: italic"># run the tasks</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>gather(<span style="color: #666666">*</span>coros)
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;main done&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># start the asyncio program</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>Running the example executes the <strong>main()</strong> coroutine as the entry point to the program.</p>
+<p>The <strong>main()</strong> coroutine then creates a list of 10 coroutine objects using a list comprehension.</p>
+<p>This list is then provided to the <strong>gather()</strong> function and unpacked into 10 separate expressions using the star operator.</p>
+<p>The <strong>main()</strong> coroutine then awaits the Future object returned from the call to gather(), suspending and waiting for all scheduled coroutines to complete their execution.</p>
+<p>The coroutines run as soon as they are able, reporting their unique messages and sleeping before terminating.</p>
+<p>Only after all coroutines in the group are complete does the <strong>main()</strong> coroutine resume and report its final message.</p>
+<p>This highlights how we might prepare a collection of coroutines and provide them as separate expressions to the <strong>gather()</strong> function.</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>main starting
+&gt;task 0 executing
+&gt;task 1 executing
+&gt;task 2 executing
+&gt;task 3 executing
+&gt;task 4 executing
+&gt;task 5 executing
+&gt;task 6 executing
+&gt;task 7 executing
+&gt;task 8 executing
+&gt;task 9 executing
+main done
+</code></pre></div>
+<p>You can learn more about how to use the gather() function in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-gather/">How to Use asyncio.gather() in Python</a></li>
+</ul>
+<p>Next, we will explore how to wait on a group of asyncio tasks.</p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

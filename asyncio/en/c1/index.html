@@ -1,0 +1,1588 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../c2/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>1. 什么是异步编程 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#1-什么是异步编程" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              1. 什么是异步编程
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#11-异步任务" class="md-nav__link">
+    1.1 异步任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-异步编程" class="md-nav__link">
+    1.2 异步编程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-python-异步编程" class="md-nav__link">
+    1.3 Python 异步编程
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#11-异步任务" class="md-nav__link">
+    1.1 异步任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-异步编程" class="md-nav__link">
+    1.2 异步编程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-python-异步编程" class="md-nav__link">
+    1.3 Python 异步编程
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="1-什么是异步编程">1. 什么是异步编程<a class="headerlink" href="#1-什么是异步编程" title="Permanent link">&para;</a></h1>
+<p><strong>1. What is Asynchronous Programming</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>异步编程是一种不会阻塞的编程范式。</p>
+<p>相反，请求和函数调用会在将来的某个时间在后台以某种方式抛出和执行。 这使得调用者可以自由地执行其他活动，并在稍后当结果可用或调用者感兴趣时处理抛出的待执行任务。</p>
+<p>在深入了解 asyncio 之前，让我们先了解一下异步编程。</p>
+</div>
+<div class="tabbed-block">
+<p>Asynchronous programming is a programming paradigm that does not block.</p>
+<p>Instead, requests and function calls are issued and executed somehow in the background at some future time. This frees the caller to perform other activities and handle the results of issued calls at a later time when results are available or when the caller is interested.</p>
+<p>Let’s get a handle on asynchronous programming before we dive into asyncio.</p>
+</div>
+</div>
+</div>
+<h2 id="11-异步任务">1.1 异步任务<a class="headerlink" href="#11-异步任务" title="Permanent link">&para;</a></h2>
+<p><strong>1.1 Asynchronous Tasks</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>异步意味着不在同一时刻, 与同步或同时相对.</p>
+<blockquote>
+<p>异步(asynchronous): 时间上不同一时刻或同时进行。</p>
+<p>— <a href="https://www.merriam-webster.com/dictionary/asynchronous">MERRIAM-WEBSTER DICTIONARY</a></p>
+</blockquote>
+<p>编程时，<a href="https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)">异步(asynchronous)</a> 意味着请求操作，尽管在请求时并未执行。 这是稍后执行的。</p>
+<blockquote>
+<p>异步(Asynchronous): 可以以相对于彼此的任何顺序同时运行的单独执行流是异步的。</p>
+<p>— PAGE 265, <a href="https://amzn.to/3TkCuwX">并发的艺术</a>, 2009.</p>
+</blockquote>
+<p>例如，我们可以进行异步函数调用。</p>
+<p>这将发出进行函数调用的请求，并且不会等待调用完成。 我们可以选择稍后检查函数调用的状态或结果。</p>
+<ul>
+<li><strong>异步函数调用(Asynchronous Function Call)</strong>: 请求在某个时间以某种方式调用某个函数，从而允许调用者恢复并执行其他活动。</li>
+</ul>
+<p>函数调用将以某种方式在某个时间在后台发生，并且程序可以执行其他任务或响应其他事件。</p>
+<p>这是关键。 我们无法控制如何或何时处理请求，只是我们希望在程序执行其他操作时处理它。</p>
+<p>发出异步函数调用通常会产生请求的某些句柄，调用者可以使用该句柄检查调用的状态或获取结果。 这通常被称为未来(future)。</p>
+<ul>
+<li><strong>Future</strong>: 异步函数调用的句柄，允许检查调用的状态并检索结果。</li>
+</ul>
+<p>异步函数调用和 future 的组合通常称为异步任务。 这是因为它比函数调用更复杂，例如允许取消请求等等。</p>
+<ul>
+<li><strong>异步任务(Asynchronous Task)</strong>: 用于指异步函数调用和结果 future 的聚合。</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>Asynchronous means not at the same time, as opposed to synchronous or at the same time.</p>
+<blockquote>
+<p>asynchronous: not simultaneous or concurrent in time</p>
+<p>— <a href="https://www.merriam-webster.com/dictionary/asynchronous">MERRIAM-WEBSTER DICTIONARY</a></p>
+</blockquote>
+<p>When programming, <a href="https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)">asynchronous</a> means that the action is requested, although not performed at the time of the request. It is performed later.</p>
+<blockquote>
+<p>Asynchronous: Separate execution streams that can run concurrently in any order relative to each other are asynchronous.</p>
+<p>— PAGE 265, <a href="https://amzn.to/3TkCuwX">THE ART OF CONCURRENCY</a>, 2009.</p>
+</blockquote>
+<p>For example, we can make an asynchronous function call.</p>
+<p>This will issue the request to make the function call and will not wait around for the call to complete. We can choose to check on the status or result of the function call later.</p>
+<ul>
+<li><strong>Asynchronous Function Call</strong>: Request that a function is called at some time and in some manner, allowing the caller to resume and perform other activities.</li>
+</ul>
+<p>The function call will happen somehow and at some time, in the background, and the program can perform other tasks or respond to other events.</p>
+<p>This is key. We don’t have control over how or when the request is handled, only that we would like it handled while the program does other things.</p>
+<p>Issuing an asynchronous function call often results in some handle on the request that the caller can use to check on the status of the call or get results. This is often called a future.</p>
+<ul>
+<li><strong>Future</strong>: A handle on an asynchronous function call allowing the status of the call to be checked and results to be retrieved.</li>
+</ul>
+<p>The combination of the asynchronous function call and future together is often referred to as an asynchronous task. This is because it is more elaborate than a function call, such as allowing the request to be canceled and more.</p>
+<ul>
+<li><strong>Asynchronous Task</strong>: Used to refer to the aggregate of an asynchronous function call and resulting future.</li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="12-异步编程">1.2 异步编程<a class="headerlink" href="#12-异步编程" title="Permanent link">&para;</a></h2>
+<p><strong>1.2 Asynchronous Programming</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>发出异步任务和进行异步函数调用称为异步编程。</p>
+<blockquote>
+<p>那么什么是异步编程呢？ 这意味着特定的长时间运行的任务可以在与主应用程序分开的后台运行。 系统不会阻塞所有其他应用程序代码等待该长时间运行的任务完成，而是可以自由地执行不依赖于该任务的其他工作。 然后，一旦长时间运行的任务完成，我们就会收到通知，以便我们可以处理结果。</p>
+<p>— PAGE 3, <a href="https://amzn.to/3Cz7Zh6">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<ul>
+<li><strong>异步编程(Asynchronous Programming)</strong>: 使用异步技术，例如发出异步任务或函数调用。</li>
+</ul>
+<p>异步编程主要用于非阻塞 I/O，例如从与其他进程或其他系统的套接字连接进行读写。</p>
+<blockquote>
+<p>在非阻塞模式下，当我们向套接字写入字节时，我们可以直接触发并忘记写入或读取，并且我们的应用程序可以继续执行其他任务。</p>
+<p>— PAGE 18, <a href="https://amzn.to/3Cz7Zh6">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>非阻塞 I/O 是一种执行 I/O 的方式，其中请求读取和写入，但异步执行。 调用者无需等待操作完成即可返回。</p>
+<p>读取和写入操作以某种方式执行（例如，通过底层操作系统或构建在其上的系统），并且操作和/或数据的状态稍后由调用者检索，一旦可用，或者当调用者准备好时。</p>
+<ul>
+<li><strong>非阻塞 I/O(Non-blocking I/O)</strong>: 通过异步请求和响应执行 I/O 操作，而不是等待操作完成。</li>
+</ul>
+<p>因此，我们可以看到非阻塞 I/O 与异步编程的关系。 事实上，我们通过异步编程来使用非阻塞I/O，或者说非阻塞I/O是通过异步编程来实现的。</p>
+<p>非阻塞 I/O 与异步编程的结合非常常见，因此通常简称为<a href="https://en.wikipedia.org/wiki/Asynchronous_I/O">异步 I/O</a>。</p>
+<ul>
+<li><strong>异步I/O(Asynchronous I/O)</strong>: 一种简写，指将异步编程与非阻塞 I/O 相结合。</li>
+</ul>
+<p>接下来，让我们研究一下 Python 中的异步编程支持。</p>
+</div>
+<div class="tabbed-block">
+<p>Issuing asynchronous tasks and making asynchronous function calls is referred to as asynchronous programming.</p>
+<blockquote>
+<p>So what is asynchronous programming? It means that a particular long-running task can be run in the background separate from the main application. Instead of blocking all other application code waiting for that long-running task to be completed, the system is free to do other work that is not dependent on that task. Then, once the long-running task is completed, we’ll be notified that it is done so we can process the result.</p>
+<p>— PAGE 3, <a href="https://amzn.to/3Cz7Zh6">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<ul>
+<li><strong>Asynchronous Programming</strong>: The use of asynchronous techniques, such as issuing asynchronous tasks or function calls.</li>
+</ul>
+<p>Asynchronous programming is primarily used with non-blocking I/O, such as reading and writing from socket connections with other processes or other systems.</p>
+<blockquote>
+<p>In non-blocking mode, when we write bytes to a socket, we can just fire and forget the write or read, and our application can go on to perform other tasks.</p>
+<p>— PAGE 18, <a href="https://amzn.to/3Cz7Zh6">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>Non-blocking I/O is a way of performing I/O where reads and writes are requested, although performed asynchronously. The caller does not need to wait for the operation to complete before returning.</p>
+<p>The read and write operations are performed somehow (e.g. by the underlying operating system or systems built upon it), and the status of the action and/or data is retrieved by the caller later, once available, or when the caller is ready.</p>
+<ul>
+<li><strong>Non-blocking I/O</strong>: Performing I/O operations via asynchronous requests and responses, rather than waiting for operations to complete.</li>
+</ul>
+<p>As such, we can see how non-blocking I/O is related to asynchronous programming. In fact, we use non-blocking I/O via asynchronous programming, or non-blocking I/O is implemented via asynchronous programming.</p>
+<p>The combination of non-blocking I/O with asynchronous programming is so common that it is commonly referred to by the shorthand of <a href="https://en.wikipedia.org/wiki/Asynchronous_I/O">asynchronous I/O</a>.</p>
+<ul>
+<li><strong>Asynchronous I/O</strong>: A shorthand that refers to combining asynchronous programming with non-blocking I/O.</li>
+</ul>
+<p>Next, let’s consider asynchronous programming support in Python.</p>
+</div>
+</div>
+</div>
+<h2 id="13-python-异步编程">1.3 Python 异步编程<a class="headerlink" href="#13-python-异步编程" title="Permanent link">&para;</a></h2>
+<p><strong>1.3 Asynchronous Programming in Python</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>从广义上讲，Python 中的异步编程是指发出请求而不是阻塞等待请求完成。</p>
+<p>我们可以通过多种方式在 Python 中实现异步编程，尽管其中一些与 Python 并发性最相关。</p>
+<p>第一个明显的例子是 <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a> 模块。 该模块使用 async/await 语法以及带有套接字和子进程的非阻塞 I/O 直接提供异步编程环境。</p>
+<blockquote>
+<p>asyncio 是异步 I/O 的缩写。 它是一个 Python 库，允许我们使用异步编程模型运行代码。 这让我们可以同时处理多个 I/O 操作，同时仍然允许我们的应用程序保持响应能力。</p>
+<p>— PAGE 3, <a href="https://amzn.to/3Cz7Zh6">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>它是使用在事件循环中运行的协程实现的，事件循环本身在单个线程中运行。</p>
+<ul>
+<li><strong>Asyncio</strong>: Python 通过 asyncio 模块提供的异步编程环境。</li>
+</ul>
+<p>更广泛地说，Python 提供了可以异步执行任务的线程和进程。</p>
+<p>例如，一个线程可以启动第二个线程来执行函数调用并恢复其他活动。 操作系统将在某个时间调度并执行第二个线程，第一个线程可能会也可能不会手动检查任务的状态。</p>
+<blockquote>
+<p>线程是异步的，这意味着它们可能以不同的速度运行，并且任何线程都可能随时停止不可预测的持续时间。</p>
+<p>— PAGE 76, <a href="https://amzn.to/3CC82J2">THE ART OF MULTIPROCESSOR PROGRAMMING</a>, 2020.</p>
+</blockquote>
+<p>更具体地说，Python 在 <a href="https://superfastpython.com/threadpoolexecutor-in-python/"><strong>ThreadPoolExecutor</strong></a> 和 <a href="https://superfastpython.com/processpoolexecutor-in-python/"><strong>ProcessPoolExeuctor</strong></a> 类中提供了基于执行器的线程池和进程池。</p>
+<p>这些类使用相同的接口，并通过返回 <strong>Future</strong> 对象的 <strong>submit()</strong> 方法支持异步任务。</p>
+<blockquote>
+<p>Concurrent.futures 模块为异步执行可调用对象提供了一个高级接口。 异步执行可以使用 ThreadPoolExecutor 通过线程执行，也可以使用 ProcessPoolExecutor 通过单独的进程执行。</p>
+<p>— <a href="https://docs.python.org/3/library/concurrent.futures.html">CONCURRENT.FUTURES — LAUNCHING PARALLEL TASKS</a></p>
+</blockquote>
+<p><a href="https://docs.python.org/3/library/multiprocessing.html">multiprocessing</a> 模块还提供使用 <a href="https://superfastpython.com/multiprocessing-pool-python/">Pool</a> 和 <a href="https://superfastpython.com/threadpool-python/">ThreadPool</a> 类中的进程和线程的工作线程池，这些类是 <strong>ThreadPoolExecutor</strong> 和 <strong>ProcessPoolExeuctor</strong> 类的前置运行器。</p>
+<p>这些类的功能是根据异步执行任务来描述的。 它们明确提供用于执行任务的每个方法的同步（阻塞）和异步（非阻塞）版本。</p>
+<p>例如，可以通过 <strong>apply()</strong> 方法同步发出一次性函数调用，或通过 <strong>apply_async()</strong> 方法异步发出一次性函数调用。</p>
+<blockquote>
+<p>一个进程池对象，它控制可以向其提交作业的工作进程池。 它支持带有超时和回调的异步结果，并具有并行映射实现。</p>
+<p>— <a href="https://docs.python.org/3/library/multiprocessing.html">MULTIPROCESSING — PROCESS-BASED PARALLELISM</a></p>
+</blockquote>
+<p>Python 中的异步编程还有其他方面与 Python 并发性的关系不太严格。</p>
+<p>例如，Python 进程异步接收或处理信号。 信号本质上是从其他进程发送的异步事件。</p>
+<p>这主要由 <a href="https://docs.python.org/3/library/signal.html"><strong>signal</strong></a> 模块支持。</p>
+<p>现在我们了解了异步编程，让我们仔细看看 asyncio。</p>
+<p>要使用所有 CPU 运行事件循环，可以<a href="https://superfastpython.com/plip-incontent">下载我的免费书</a> 以了解如何操作。</p>
+</div>
+<div class="tabbed-block">
+<p>Broadly, asynchronous programming in Python refers to making requests and not blocking to wait for them to complete.</p>
+<p>We can implement asynchronous programming in Python in various ways, although a few are most relevant for Python concurrency.</p>
+<p>The first and obvious example is the <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a> module. This module directly offers an asynchronous programming environment using the async/await syntax and non-blocking I/O with sockets and subprocesses.</p>
+<blockquote>
+<p>asyncio is short for asynchronous I/O. It is a Python library that allows us to run code using an asynchronous programming model. This lets us handle multiple I/O operations at once, while still allowing our application to remain responsive.</p>
+<p>— PAGE 3, <a href="https://amzn.to/3Cz7Zh6">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>It is implemented using coroutines that run in an event loop that itself runs in a single thread.</p>
+<ul>
+<li><strong>Asyncio</strong>: An asynchronous programming environment provided in Python via the asyncio module.</li>
+</ul>
+<p>More broadly, Python offers threads and processes that can execute tasks asynchronously.</p>
+<p>For example, one thread can start a second thread to execute a function call and resume other activities. The operating system will schedule and execute the second thread at some time and the first thread may or may not check on the status of the task, manually.</p>
+<blockquote>
+<p>Threads are asynchronous, meaning that they may run at different speeds, and any thread can halt for an unpredictable duration at any time.</p>
+<p>— PAGE 76, <a href="https://amzn.to/3CC82J2">THE ART OF MULTIPROCESSOR PROGRAMMING</a>, 2020.</p>
+</blockquote>
+<p>More concretely, Python provides executor-based thread pools and process pools in the <a href="https://superfastpython.com/threadpoolexecutor-in-python/"><strong>ThreadPoolExecutor</strong></a> and <a href="https://superfastpython.com/processpoolexecutor-in-python/"><strong>ProcessPoolExeuctor</strong></a> classes.</p>
+<p>These classes use the same interface and support asynchronous tasks via the <strong>submit()</strong> method that returns a <strong>Future</strong> object.</p>
+<blockquote>
+<p>The concurrent.futures module provides a high-level interface for asynchronously executing callables. The asynchronous execution can be performed with threads, using ThreadPoolExecutor, or separate processes, using ProcessPoolExecutor.</p>
+<p>— <a href="https://docs.python.org/3/library/concurrent.futures.html">CONCURRENT.FUTURES — LAUNCHING PARALLEL TASKS</a></p>
+</blockquote>
+<p>The <a href="https://docs.python.org/3/library/multiprocessing.html">multiprocessing</a> module also provides pools of workers using processes and threads in the <a href="https://superfastpython.com/multiprocessing-pool-python/">Pool</a> and <a href="https://superfastpython.com/threadpool-python/">ThreadPool</a> classes, forerunners to the <strong>ThreadPoolExecutor</strong> and <strong>ProcessPoolExeuctor</strong> classes.</p>
+<p>The capabilities of these classes are described in terms of worker execution tasks asynchronously. They explicitly provide synchronous (blocking) and asynchronous (non-blocking) versions of each method for executing tasks.</p>
+<p>For example, one may issue a one-off function call synchronously via the <strong>apply()</strong> method or asynchronously via the <strong>apply_async()</strong> method.</p>
+<blockquote>
+<p>A process pool object which controls a pool of worker processes to which jobs can be submitted. It supports asynchronous results with timeouts and callbacks and has a parallel map implementation.</p>
+<p>— <a href="https://docs.python.org/3/library/multiprocessing.html">MULTIPROCESSING — PROCESS-BASED PARALLELISM</a></p>
+</blockquote>
+<p>There are other aspects of asynchronous programming in Python that are less strictly related to Python concurrency.</p>
+<p>For example, Python processes receive or handle signals asynchronously. Signals are fundamentally asynchronous events sent from other processes.</p>
+<p>This is primarily supported by the <a href="https://docs.python.org/3/library/signal.html"><strong>signal</strong></a> module.</p>
+<p>Now that we know about asynchronous programming, let’s take a closer look at asyncio.</p>
+<p>Run your loops using all CPUs, <a href="https://superfastpython.com/plip-incontent">download my FREE book</a> to learn how.</p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

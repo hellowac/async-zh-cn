@@ -1,0 +1,1864 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c3/">
+      
+      
+        <link rel="next" href="../c5/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>4. Python 中的协程 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#4-python-中的协程" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4. Python 中的协程
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#41-什么是协程" class="md-nav__link">
+    4.1 什么是协程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-协程与例程和子例程" class="md-nav__link">
+    4.2 协程与例程和子例程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-协程与生成器" class="md-nav__link">
+    4.3 协程与生成器
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-协程与任务" class="md-nav__link">
+    4.4 协程与任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-协程与线程" class="md-nav__link">
+    4.5 协程与线程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#46-协程与进程" class="md-nav__link">
+    4.6 协程与进程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#47-python-何时添加了协程" class="md-nav__link">
+    4.7 Python 何时添加了协程
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#41-什么是协程" class="md-nav__link">
+    4.1 什么是协程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-协程与例程和子例程" class="md-nav__link">
+    4.2 协程与例程和子例程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-协程与生成器" class="md-nav__link">
+    4.3 协程与生成器
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-协程与任务" class="md-nav__link">
+    4.4 协程与任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-协程与线程" class="md-nav__link">
+    4.5 协程与线程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#46-协程与进程" class="md-nav__link">
+    4.6 协程与进程
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#47-python-何时添加了协程" class="md-nav__link">
+    4.7 Python 何时添加了协程
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="4-python-中的协程">4. Python 中的协程<a class="headerlink" href="#4-python-中的协程" title="Permanent link">&para;</a></h1>
+<p><strong>4. Coroutines in Python</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Python 提供了一流的协程，具有 <strong>“coroutine”</strong> 类型和新表达式，例如 <strong>“async def”</strong> 和 <strong>“await”</strong>。</p>
+<p>它提供了<strong>“asyncio”</strong>模块来运行协程和开发异步程序。</p>
+<p>在本节中，我们将更仔细地了解协程。</p>
+</div>
+<div class="tabbed-block">
+<p>Python provides first-class coroutines with a <strong>“coroutine”</strong> type and new expressions like <strong>“async def”</strong> and <strong>“await“</strong>.</p>
+<p>It provides the <strong>“asyncio”</strong> module for running coroutines and developing asynchronous programs.</p>
+<p>In this section, we will take a much closer look at coroutines.</p>
+</div>
+</div>
+</div>
+<h2 id="41-什么是协程">4.1 什么是协程<a class="headerlink" href="#41-什么是协程" title="Permanent link">&para;</a></h2>
+<p><strong>4.1 What is a Coroutine</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>协程是一个可以<a href="https://en.wikipedia.org/wiki/Coroutine">暂停和恢复的函数</a>。</p>
+<p>它通常被定义为广义子例程。</p>
+<p>可以执行子例程，从一点开始并在另一点结束。 然而，协程可以执行然后挂起，并在最终终止之前恢复多次。</p>
+<p>具体来说，协程可以控制何时暂停执行。</p>
+<p>这可能涉及特定表达式的使用，例如Python中的“await”表达式，就像Python生成器中的yield表达式一样。</p>
+<blockquote>
+<p>协程是一种可以在我们有可能长时间运行的任务时暂停并在该任务完成时恢复的方法。 在Python 3.5版本中，当关键字async和await被显式添加到语言中时，该语言实现了对协程和异步编程的一流支持。</p>
+<p>— PAGE 3, <a href="https://amzn.to/3ENILNs">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>协程可能会因多种原因而挂起，例如执行另一个协程，例如 等待另一个任务，或者等待一些外部资源，例如套接字连接或进程返回数据。</p>
+<p>协程用于并发。</p>
+<blockquote>
+<p>协程让您可以在 Python 程序中拥有大量看似同时存在的函数。</p>
+<p>— PAGE 267, <a href="https://amzn.to/3eClkfe">EFFECTIVE PYTHON</a>, 2019.</p>
+</blockquote>
+<p>可以同时创建和执行许多协程。 它们可以控制何时挂起和恢复，从而允许它们在执行并发任务时进行合作。</p>
+<p>这称为“协作多任务处理”(https://en.wikipedia.org/wiki/Cooperative_multitasking)，与通常与线程一起使用的多任务处理（称为抢占式多任务处理）不同。</p>
+<blockquote>
+<p>… 为了同时运行多个应用程序，进程会定期或在空闲或逻辑阻塞时自愿放弃控制权。 这种类型的多任务处理称为协作，因为所有程序都必须协作才能使调度方案发挥作用。</p>
+<p>— <a href="https://en.wikipedia.org/wiki/Cooperative_multitasking">COOPERATIVE MULTITASKING, WIKIPEDIA</a></p>
+</blockquote>
+<p>抢占式多任务处理涉及操作系统选择要挂起和恢复的线程以及何时执行，而不是在协作多任务处理的情况下由任务本身决定。</p>
+<p>现在我们已经了解了什么是协程，让我们通过将它们与其他熟悉的编程结构进行比较来加深理解。</p>
+</div>
+<div class="tabbed-block">
+<p>A <a href="https://en.wikipedia.org/wiki/Coroutine">coroutine is a function</a> that can be suspended and resumed.</p>
+<p>It is often defined as a generalized subroutine.</p>
+<p>A subroutine can be executed, starting at one point and finishing at another point. Whereas, a coroutine can be executed then suspended, and resumed many times before finally terminating.</p>
+<p>Specifically, coroutines have control over when exactly they suspend their execution.</p>
+<p>This may involve the use of a specific expression, such as an “await” expression in Python, like a yield expression in a Python generator.</p>
+<blockquote>
+<p>A coroutine is a method that can be paused when we have a potentially long-running task and then resumed when that task is finished. In Python version 3.5, the language implemented first-class support for coroutines and asynchronous programming when the keywords async and await were explicitly added to the language.</p>
+<p>— PAGE 3, <a href="https://amzn.to/3ENILNs">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>A coroutine may suspend for many reasons, such as executing another coroutine, e.g. awaiting another task, or waiting for some external resources, such as a socket connection or process to return data.</p>
+<p>Coroutines are used for concurrency.</p>
+<blockquote>
+<p>Coroutines let you have a very large number of seemingly simultaneous functions in your Python programs.</p>
+<p>— PAGE 267, <a href="https://amzn.to/3eClkfe">EFFECTIVE PYTHON</a>, 2019.</p>
+</blockquote>
+<p>Many coroutines can be created and executed at the same time. They have control over when they will suspend and resume, allowing them to cooperate as to when concurrent tasks are executed.</p>
+<p>This is called <a href="https://en.wikipedia.org/wiki/Cooperative_multitasking">cooperative multitasking</a> and is different from the multitasking typically used with threads called preemptive multitasking tasking.</p>
+<blockquote>
+<p>… in order to run multiple applications concurrently, processes voluntarily yield control periodically or when idle or logically blocked. This type of multitasking is called cooperative because all programs must cooperate for the scheduling scheme to work.</p>
+<p>— <a href="https://en.wikipedia.org/wiki/Cooperative_multitasking">COOPERATIVE MULTITASKING, WIKIPEDIA</a></p>
+</blockquote>
+<p>Preemptive multitasking involves the operating system choosing what threads to suspend and resume and when to do so, as opposed to the tasks themselves deciding in the case of cooperative multitasking.</p>
+<p>Now that we have some idea of what a coroutine is, let’s deepen this understanding by comparing them to other familiar programming constructs.</p>
+</div>
+</div>
+</div>
+<h2 id="42-协程与例程和子例程">4.2 协程与例程和子例程<a class="headerlink" href="#42-协程与例程和子例程" title="Permanent link">&para;</a></h2>
+<p><strong>4.2 Coroutine vs Routine and Subroutine</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>在现代编程中，“例程”和“子例程”通常指同一事物。</p>
+<p>也许更正确的是，例程是一个程序，而子例程是程序中的一个函数。</p>
+<p>例程有子例程。</p>
+<p>它是一个离散的表达式模块，被分配了一个名称，可以接受参数并且可以返回一个值。</p>
+<ul>
+<li><strong>子例程(Subroutine)</strong>: A module of instructions that can be executed on demand, typically named, and may take arguments and return a value. also called a function</li>
+</ul>
+<p>执行子例程，运行表达式，然后以某种方式返回。 通常，一个子例程被另一个子例程调用。</p>
+<p>协程是子程序的扩展。 这意味着子例程是一种特殊类型的协程。</p>
+<p>协程在很多方面都类似于子例程，例如：</p>
+<ul>
+<li>它们都是离散的命名表达式模块。</li>
+<li>他们都可以接受争论，也可以不接受争论。</li>
+<li>它们都可以返回值，也可以不返回值。</li>
+</ul>
+<p>主要区别在于，它在返回和退出之前多次选择暂停和恢复执行。</p>
+<p>协程和子例程都可以调用它们自己的其他示例。 一个子程序可以调用其他子程序。 协程执行其他协程。 然而，协程也可以执行其他子例程。</p>
+<p>当一个协程执行另一个协程时，它必须暂停执行，并在另一个协程完成后允许另一个协程恢复。</p>
+<p>这就像一个子例程调用另一个子例程。 不同之处在于协程的挂起可能允许任意数量的其他协程运行。</p>
+<p>这使得调用另一个协程的协程比调用另一个子例程的子例程更强大。 它是协程促进的协作多任务处理的核心。</p>
+</div>
+<div class="tabbed-block">
+<p>A “routine” and “subroutine” often refer to the same thing in modern programming.</p>
+<p>Perhaps more correctly, a routine is a program, whereas a <a href="https://en.wikipedia.org/wiki/Function_(computer_programming)">subroutine is a function</a> in the program.</p>
+<p>A routine has subroutines.</p>
+<p>It is a discrete module of expressions that is assigned a name, may take arguments and may return a value.</p>
+<ul>
+<li><strong>Subroutine</strong>: A module of instructions that can be executed on demand, typically named, and may take arguments and return a value. also called a function</li>
+</ul>
+<p>A subroutine is executed, runs through the expressions, and returns somehow. Typically, a subroutine is called by another subroutine.</p>
+<p>A coroutine is an extension of a subroutine. This means that a subroutine is a special type of a coroutine.</p>
+<p>A coroutine is like a subroutine in many ways, such as:</p>
+<ul>
+<li>They both are discrete named modules of expressions.</li>
+<li>They both can take arguments, or not.</li>
+<li>They both can return a value, or not.</li>
+</ul>
+<p>The main difference is that it chooses to suspend and resume its execution many times before returning and exiting.</p>
+<p>Both coroutines and subroutines can call other examples of themselves. A subroutine can call other subroutines. A coroutine executes other coroutines. However, a coroutine can also execute other subroutines.</p>
+<p>When a coroutine executes another coroutine, it must suspend its execution and allow the other coroutine to resume once the other coroutine has completed.</p>
+<p>This is like a subroutine calling another subroutine. The difference is the suspension of the coroutine may allow any number of other coroutines to run as well.</p>
+<p>This makes a coroutine calling another coroutine more powerful than a subroutine calling another subroutine. It is central to the cooperating multitasking facilitated by coroutines.</p>
+</div>
+</div>
+</div>
+<h2 id="43-协程与生成器">4.3 协程与生成器<a class="headerlink" href="#43-协程与生成器" title="Permanent link">&para;</a></h2>
+<p><strong>4.3 Coroutine vs Generator</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>生成器是一个可以暂停其执行的特殊函数。</p>
+<blockquote>
+<p>generator: 返回生成器迭代器的函数。 它看起来像一个普通函数，只不过它包含用于生成一系列可在 for 循环中使用的值的yield 表达式，或者可以使用 next() 函数一次检索一个值。</p>
+<p>— <a href="https://docs.python.org/3/glossary.html">PYTHON GLOSSARY</a></p>
+</blockquote>
+<p>生成器函数可以像普通函数一样定义，尽管它在暂停执行并返回值时使用了yield 表达式。</p>
+<p>生成器函数将返回一个可以遍历的生成器迭代器对象，例如通过 for 循环。 每次执行生成器时，它都会从最后一个暂停点运行到下一个yield 语句。</p>
+<blockquote>
+<p>generator iterator: 由生成器函数创建的对象。 每个yield都会暂时挂起处理，记住位置执行状态（包括局部变量和挂起的try语句）。 当生成器迭代器恢复时，它会从上次停止的地方继续（与每次调用时重新开始的函数相反）。</p>
+<p>— <a href="https://docs.python.org/3/glossary.html">PYTHON GLOSSARY</a></p>
+</blockquote>
+<p>协程可以使用 <strong>“await”</strong> 表达式挂起或屈服于另一个协程。 一旦等待的协程完成，它将从此时开始恢复。</p>
+<blockquote>
+<p>使用这种范例，await 语句在功能上类似于yield 语句； 当其他代码运行时，当前函数的执行会暂停。 一旦 await 或 yield 解析出数据，该函数就会恢复。</p>
+<p>— PAGE 218, <a href="https://amzn.to/3rY7cQE">HIGH PERFORMANCE PYTHON</a>, 2020.</p>
+</blockquote>
+<p>我们可以将生成器视为循环中使用的特殊类型的协程和协作多任务处理。</p>
+<blockquote>
+<p>生成器，也称为半协程，是协程的子集。</p>
+<p>— <a href="https://en.wikipedia.org/wiki/Coroutine">COROUTINE, WIKIPEDIA</a>.</p>
+</blockquote>
+<p>在开发协程之前，生成器已被扩展，以便它们可以像 Python 程序中的协程一样使用。</p>
+<p>这需要大量的生成器技术知识和自定义任务调度程序的开发。</p>
+<blockquote>
+<p>要使用生成器实现您自己的并发，您首先需要对生成器函数和yield 语句有基本的了解。 具体来说，yield 的基本行为是它导致生成器暂停其执行。 通过暂停执行，可以编写一个调度程序，将生成器视为一种“任务”，并使用一种协作任务切换来交替执行它们。</p>
+<p>— PAGE 524, <a href="https://amzn.to/3D002li"><strong>PYTHON COOKBOOK</strong></a>, 2013.</p>
+</blockquote>
+<p>这是通过对生成器的更改和引入 <strong>“yield from”</strong> 表达式实现的。</p>
+<p>这些后来被弃用，取而代之的是现代的 <strong>async/await</strong> 表达式。</p>
+</div>
+<div class="tabbed-block">
+<p>A generator is a special function that can suspend its execution.</p>
+<blockquote>
+<p>generator: A function which returns a generator iterator. It looks like a normal function except that it contains yield expressions for producing a series of values usable in a for-loop or that can be retrieved one at a time with the next() function.</p>
+<p>— <a href="https://docs.python.org/3/glossary.html">PYTHON GLOSSARY</a></p>
+</blockquote>
+<p>A generator function can be defined like a normal function although it uses a yield expression at the point it will suspend its execution and return a value.</p>
+<p>A generator function will return a generator iterator object that can be traversed, such as via a for-loop. Each time the generator is executed, it runs from the last point it was suspended to the next yield statement.</p>
+<blockquote>
+<p>generator iterator: An object created by a generator function. Each yield temporarily suspends processing, remembering the location execution state (including local variables and pending try-statements). When the generator iterator resumes, it picks up where it left off (in contrast to functions which start fresh on every invocation).</p>
+<p>— <a href="https://docs.python.org/3/glossary.html">PYTHON GLOSSARY</a></p>
+</blockquote>
+<p>A coroutine can suspend or yield to another coroutine using an “await” expression. It will then resume from this point once the awaited coroutine has been completed.</p>
+<blockquote>
+<p>Using this paradigm, an await statement is similar in function to a yield statement; the execution of the current function gets paused while other code is run. Once the await or yield resolves with data, the function is resumed.</p>
+<p>— PAGE 218, <a href="https://amzn.to/3rY7cQE">HIGH PERFORMANCE PYTHON</a>, 2020.</p>
+</blockquote>
+<p>We might think of a generator as a special type of coroutine and cooperative multitasking used in loops.</p>
+<blockquote>
+<p>Generators, also known as semicoroutines, are a subset of coroutines.</p>
+<p>— <a href="https://en.wikipedia.org/wiki/Coroutine">COROUTINE, WIKIPEDIA</a>.</p>
+</blockquote>
+<p>Before coroutines were developed, generators were extended so that they might be used like coroutines in Python programs.</p>
+<p>This required a lot of technical knowledge of generators and the development of custom task schedulers.</p>
+<blockquote>
+<p>To implement your own concurrency using generators, you first need a fundamental insight concerning generator functions and the yield statement. Specifically, the fundamental behavior of yield is that it causes a generator to suspend its execution. By suspending execution, it is possible to write a scheduler that treats generators as a kind of “task” and alternates their execution using a kind of cooperative task switching.</p>
+<p>— PAGE 524, <strong>PYTHON COOKBOOK</strong>, 2013.</p>
+</blockquote>
+<p>This was made possible via changes to the generators and the introduction of the <strong>“yield from”</strong> expression.</p>
+<p>These were later deprecated in favor of the modern async/await expressions.</p>
+</div>
+</div>
+</div>
+<h2 id="44-协程与任务">4.4 协程与任务<a class="headerlink" href="#44-协程与任务" title="Permanent link">&para;</a></h2>
+<p><strong>4.4 Coroutine vs Task</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">中文</label><label for="__tabbed_5_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>子例程和协程可以代表程序中的“任务”。</p>
+<p>但是，在 Python 中，有一个称为 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task">asyncio.Task</a> 对象的特定对象。</p>
+<blockquote>
+<p>运行 Python 协程的类似 Future 的对象。 [...] 任务用于在事件循环中运行协程。</p>
+<p>— ASYNCIO TASK OBJECT</p>
+</blockquote>
+<p>协程可以包装在 <strong>asyncio.Task</strong> 对象中并独立执行，而不是直接在协程内执行。 <strong>Task</strong> 对象提供异步执行协程的句柄。</p>
+<ul>
+<li><strong>Task</strong>: 可以独立执行的包装协程。</li>
+</ul>
+<p>这允许包装的协程在后台执行。 调用协程可以继续执行指令，而不是等待另一个协程。</p>
+<p><strong>任务</strong>不能单独存在，它必须包装一个协程。</p>
+<p>因此，<strong>任务</strong>是协程，但协程不是任务。</p>
+<p>您可以在教程中了解有关 <strong>asyncio.Task</strong> 对象的更多信息：</p>
+</div>
+<div class="tabbed-block">
+<p>A subroutine and a coroutine may represent a “task” in a program.</p>
+<p>However, in Python, there is a specific object called an <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task">asyncio.Task</a> object.</p>
+<blockquote>
+<p>A Future-like object that runs a Python coroutine. […] Tasks are used to run coroutines in event loops.</p>
+<p>— ASYNCIO TASK OBJECT</p>
+</blockquote>
+<p>A coroutine can be wrapped in an <strong>asyncio.Task</strong> object and executed independently, as opposed to being executed directly within a coroutine. The <strong>Task</strong> object provides a handle on the asynchronously execute coroutine.</p>
+<ul>
+<li><strong>Task</strong>: A wrapped coroutine that can be executed independently.</li>
+</ul>
+<p>This allows the wrapped coroutine to execute in the background. The calling coroutine can continue executing instructions rather than awaiting another coroutine.</p>
+<p>A <strong>Task</strong> cannot exist on its own, it must wrap a coroutine.</p>
+<p>Therefore a <strong>Task</strong> is a coroutine, but a coroutine is not a task.</p>
+<p>You can learn more about <strong>asyncio.Task</strong> objects in the tutorial:</p>
+</div>
+</div>
+</div>
+<h2 id="45-协程与线程">4.5 协程与线程<a class="headerlink" href="#45-协程与线程" title="Permanent link">&para;</a></h2>
+<p><strong>4.5 Coroutine vs Thread</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">中文</label><label for="__tabbed_6_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>协程比线程更轻量。</p>
+<ul>
+<li>Thread: 与协程相比重量级</li>
+<li>Coroutine: 与线程相比轻量级。</li>
+</ul>
+<p>协程被定义为一个函数。</p>
+<p>线程是由底层操作系统创建和管理的对象，在 Python 中表示为 <strong>threading.Thread</strong> 对象。</p>
+<ul>
+<li><strong>Thread</strong>: 由操作系统管理，由Python对象表示。</li>
+</ul>
+<p>这意味着协程的创建和开始执行速度通常更快，并且占用的内存更少。 相反，线程的创建和启动速度比协程慢，并且占用更多内存。</p>
+<blockquote>
+<p>启动协程的成本是函数调用。 一旦协程处于活动状态，它就会使用不到 1 KB 的内存，直到耗尽为止。</p>
+<p>— PAGE 267, <a href="https://amzn.to/3eClkfe">EFFECTIVE PYTHON</a>, 2019.</p>
+</blockquote>
+<p>协程在一个线程内执行，因此单个线程可以执行多个协程。</p>
+<blockquote>
+<p>许多单独的异步函数似乎都是同时运行的，模仿了 Python 线程的并发行为。 然而，协程可以做到这一点，无需内存开销、启动和上下文切换成本，也无需线程所需的复杂锁定和同步代码。</p>
+<p>— PAGE 267, <a href="https://amzn.to/3eClkfe">EFFECTIVE PYTHON</a>, 2019.</p>
+</blockquote>
+<p>您可以在指南中了解有关线程的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/threading-in-python/">Python Threading: 完整指南</a></li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>A coroutine is more lightweight than a thread.</p>
+<ul>
+<li>Thread: heavyweight compared to a coroutine</li>
+<li>Coroutine: lightweight compared to a thread.</li>
+</ul>
+<p>A coroutine is defined as a function.</p>
+<p>A thread is an object created and managed by the underlying operating system and represented in Python as a <strong>threading.Thread</strong> object.</p>
+<ul>
+<li><strong>Thread</strong>: Managed by the operating system, represented by a Python object.</li>
+</ul>
+<p>This means that coroutines are typically faster to create and start executing and take up less memory. Conversely, threads are slower than coroutines to create and start and take up more memory.</p>
+<blockquote>
+<p>The cost of starting a coroutine is a function call. Once a coroutine is active, it uses less than 1 KB of memory until it’s exhausted.</p>
+<p>— PAGE 267, <a href="https://amzn.to/3eClkfe">EFFECTIVE PYTHON</a>, 2019.</p>
+</blockquote>
+<p>Coroutines execute within one thread, therefore a single thread may execute many coroutines.</p>
+<blockquote>
+<p>Many separate async functions advanced in lockstep all seem to run simultaneously, mimicking the concurrent behavior of Python threads. However, coroutines do this without the memory overhead, startup and context switching costs, or complex locking and synchronization code that’s required for threads.</p>
+<p>— PAGE 267, <a href="https://amzn.to/3eClkfe">EFFECTIVE PYTHON</a>, 2019.</p>
+</blockquote>
+<p>You can learn more about threads in the guide:</p>
+<ul>
+<li><a href="https://superfastpython.com/threading-in-python/">Python Threading: The Complete Guide</a></li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="46-协程与进程">4.6 协程与进程<a class="headerlink" href="#46-协程与进程" title="Permanent link">&para;</a></h2>
+<p><strong>4.6 Coroutine vs Process</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">中文</label><label for="__tabbed_7_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>协程比进程更轻量。</p>
+<p>事实上，线程比进程更轻量。</p>
+<p>进程是一个计算机程序。 它可能有一个或多个线程。</p>
+<p>Python 进程实际上是 Python 解释器的一个单独实例。</p>
+<p>进程与线程一样，由底层操作系统创建和管理，并由 <strong>multiprocessing.Process</strong> 对象表示。</p>
+<ul>
+<li><strong>Process</strong>: 由操作系统管理，由Python对象表示。</li>
+</ul>
+<p>这意味着协程的创建和启动速度明显快于进程，并且占用的内存也少得多。</p>
+<p>协程只是一种特殊函数，而进程是至少具有一个线程的解释器的实例。</p>
+<p>您可以在指南中了解有关 Python 进程的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/multiprocessing-in-python/">Python Multiprocessing: 完整指南</a></li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>A coroutine is more lightweight than a process.</p>
+<p>In fact, a thread is more lightweight than a process.</p>
+<p>A process is a computer program. It may have one or many threads.</p>
+<p>A Python process is in fact a separate instance of the Python interpreter.</p>
+<p>Processes, like threads, are created and managed by the underlying operating system and are represented by a <strong>multiprocessing.Process</strong> object.</p>
+<ul>
+<li><strong>Process</strong>: Managed by the operating system, represented by a Python object.</li>
+</ul>
+<p>This means that coroutines are significantly faster than a process to create and start and take up much less memory.</p>
+<p>A coroutine is just a special function, whereas a Process is an instance of the interpreter that has at least one thread.</p>
+<p>You can learn more about Python processes in the guide:</p>
+<ul>
+<li><a href="https://superfastpython.com/multiprocessing-in-python/">Python Multiprocessing: The Complete Guide</a></li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="47-python-何时添加了协程">4.7 Python 何时添加了协程<a class="headerlink" href="#47-python-何时添加了协程" title="Permanent link">&para;</a></h2>
+<p><strong>4.7 When Were Coroutines Added to Python</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">中文</label><label for="__tabbed_8_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>协程扩展了 Python 中的生成器。</p>
+<p>长期以来，生成器一直在慢慢地朝着成为一流协程的方向发展。</p>
+<p>我们可以探索 Python 的一些主要变化来添加协程，我们可以将其视为 asyncio 概率添加的子集。</p>
+<p>像 <strong>send()</strong> 和 <strong>close()</strong> 这样的新方法被添加到生成器对象中，以允许它们更像协程。</p>
+<p>这些是在 Python 2.5 中添加的，并在 <a href="https://peps.python.org/pep-0342/">PEP 342</a> 中进行了描述.</p>
+<blockquote>
+<p>此 PEP 对生成器的 API 和语法提出了一些增强，使它们可以用作简单的协程。</p>
+<p>— <a href="https://peps.python.org/pep-0342/">PEP 342 – COROUTINES VIA ENHANCED GENERATORS</a></p>
+</blockquote>
+<p>随后，允许生成器发出<a href="https://peps.python.org/pep-0334/">PEP 334</a>中描述的暂停异常和停止异常.</p>
+<blockquote>
+<p>该 PEP 提出了一种基于迭代器协议扩展的有限协程方法。 目前，迭代器可能会引发 StopIteration 异常来指示它已完成生成值。 该提案为此协议添加了另一个例外，SuspendIteration，它表明给定的迭代器可能有更多的值要生成，但目前无法这样做。</p>
+<p>— <a href="https://peps.python.org/pep-0334/">PEP 334 – SIMPLE COROUTINES VIA SUSPENDITERATION</a></p>
+</blockquote>
+<p>通过 asyncio 模块在 Python 中使用现代协程的绝大多数功能在 <a href="https://peps.python.org/pep-3156/">PEP 3156</a> 中进行了描述，并在 Python 3.3 中添加。</p>
+<blockquote>
+<p>这是从 Python 3.3 开始的 Python 3 中异步 I/O 的提案。 考虑一下 PEP 3153 中缺少的具体提案。该提案包括可插入事件循环、类似于 Twisted 中的传输和协议抽象，以及基于 (PEP 380) 产量的更高级别调度程序。 建议的包名称是 asyncio。</p>
+<p>— <a href="https://peps.python.org/pep-3156/">PEP 3156 – ASYNCHRONOUS IO SUPPORT REBOOTED: THE “ASYNCIO” MODULE</a></p>
+</blockquote>
+<p>基于生成器的第二种协程方法已添加到 <a href="https://docs.python.org/3.4/library/asyncio-task.html">Python 3.4</a> 作为 Python 生成器的扩展。</p>
+<p>协程被定义为使用 <strong>@asyncio.coroutine</strong> 装饰器的函数。</p>
+<p>协程是通过 asyncio 模块使用 asyncio 事件循环执行的。</p>
+<p>协程可以通过 <strong>“yield from”</strong> 表达式挂起并执行另一个协程</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># 在 Python 3.4 中定义自定义协程</span>
+<span style="color: #AA22FF">@asyncio</span><span style="color: #666666">.</span>coroutine
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 挂起并执行另一个协程</span>
+    <span style="color: #008000; font-weight: bold">yield from</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+</code></pre></div>
+<p><strong>“yield from”</strong> 表达式在 <a href="https://peps.python.org/pep-0380/"><strong>PEP 380</strong></a> 中定义。</p>
+<blockquote>
+<p>为生成器提出了一种语法，将其部分操作委托给另一个生成器。 这允许将包含“yield”的代码部分分解出来并放置在另一个生成器中。</p>
+<p>— <a href="https://peps.python.org/pep-0380/">PEP 380 – SYNTAX FOR DELEGATING TO A SUBGENERATOR</a></p>
+</blockquote>
+<p><strong>“yield from”</strong> 表达式仍然可在生成器中使用，尽管它是一种已弃用的在协程中暂停执行的方法，有利于 <a href="https://docs .python.org/3/reference/expressions.html#yield-expressions"><strong>“await”</strong> 表达式。</a></p>
+<blockquote>
+<p>注意：对基于生成器的协程的支持已被弃用并在 Python 3.11 中删除。 基于生成器的协程早于 async/await 语法。 它们是Python生成器，使用yield from表达式来等待Futures和其他协程。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-task.html">ASYNCIO COROUTINES AND TASKS</a></p>
+</blockquote>
+<p>我们可以说协程是在 3.5 版本中作为一流对象添加到 Python 中的。</p>
+<p>这包括对 Python 语言的更改，例如 <strong>“async def”</strong>、<strong>“await”</strong>、<strong>“async with”</strong> 和 <strong>“async for”</strong> 表达式 作为协程类型。</p>
+<p>这些更改在 <a href="https://peps.python.org/pep-0492/">PEP 492</a> 中进行了描述。</p>
+<blockquote>
+<p>建议使协程成为Python中一个适当的独立概念，并引入新的支持语法。 最终目标是帮助在 Python 中建立一个通用的、易于理解的异步编程思维模型，并使其尽可能接近同步编程。</p>
+<p>— <a href="https://peps.python.org/pep-0492/">PEP 492 – COROUTINES WITH ASYNC AND AWAIT SYNTAX</a></p>
+</blockquote>
+<p>现在我们知道了什么是协程，让我们仔细看看如何在 Python 中使用它们。</p>
+<p><strong>被 python 并发 API 淹没了吗？</strong></p>
+<p>寻求解脱，下载我的免费 <a href="https://marvelous-writer-6152.ck.page/8f23adb076">Python 并发思维导图</a></p>
+</div>
+<div class="tabbed-block">
+<p>Coroutines extend generators in Python.</p>
+<p>Generators have slowly been migrating towards becoming first-class coroutines for a long time.</p>
+<p>We can explore some of the major changes to Python to add coroutines, which we might consider a subset of the probability addition of asyncio.</p>
+<p>New methods like <strong>send()</strong> and <strong>close()</strong> were added to generator objects to allow them to act more like coroutines.</p>
+<p>These were added in Python 2.5 and described in <a href="https://peps.python.org/pep-0342/">PEP 342</a>.</p>
+<blockquote>
+<p>This PEP proposes some enhancements to the API and syntax of generators, to make them usable as simple coroutines.</p>
+<p>— <a href="https://peps.python.org/pep-0342/">PEP 342 – COROUTINES VIA ENHANCED GENERATORS</a></p>
+</blockquote>
+<p>Later, allowing generators to emit a suspension exception as well as a stop exception described in <a href="https://peps.python.org/pep-0334/">PEP 334</a>.</p>
+<blockquote>
+<p>This PEP proposes a limited approach to coroutines based on an extension to the iterator protocol. Currently, an iterator may raise a StopIteration exception to indicate that it is done producing values. This proposal adds another exception to this protocol, SuspendIteration, which indicates that the given iterator may have more values to produce, but is unable to do so at this time.</p>
+<p>— <a href="https://peps.python.org/pep-0334/">PEP 334 – SIMPLE COROUTINES VIA SUSPENDITERATION</a></p>
+</blockquote>
+<p>The vast majority of the capabilities for working with modern coroutines in Python via the asyncio module were described in <a href="https://peps.python.org/pep-3156/">PEP 3156</a>, added in Python 3.3.</p>
+<blockquote>
+<p>This is a proposal for asynchronous I/O in Python 3, starting at Python 3.3. Consider this the concrete proposal that is missing from PEP 3153. The proposal includes a pluggable event loop, transport and protocol abstractions similar to those in Twisted, and a higher-level scheduler based on yield from (PEP 380). The proposed package name is asyncio.</p>
+<p>— <a href="https://peps.python.org/pep-3156/">PEP 3156 – ASYNCHRONOUS IO SUPPORT REBOOTED: THE “ASYNCIO” MODULE</a></p>
+</blockquote>
+<p>A second approach to coroutines, based on generators, was added to <a href="https://docs.python.org/3.4/library/asyncio-task.html">Python 3.4</a> as an extension to Python generators.</p>
+<p>A coroutine was defined as a function that used the <strong>@asyncio.coroutine</strong> decorator.</p>
+<p>Coroutines were executed using an asyncio event loop, via the asyncio module.</p>
+<p>A coroutine could suspend and execute another coroutine via the <strong>“yield from”</strong> expression</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># define a custom coroutine in Python 3.4</span>
+<span style="color: #AA22FF">@asyncio</span><span style="color: #666666">.</span>coroutine
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">custom_coro</span>():
+    <span style="color: #3D7B7B; font-style: italic"># suspend and execute another coroutine</span>
+    <span style="color: #008000; font-weight: bold">yield from</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">1</span>)
+</code></pre></div>
+<p>The <strong>“yield from”</strong> expression was defined in <a href="https://peps.python.org/pep-0380/"><strong>PEP 380</strong></a>.</p>
+<blockquote>
+<p>A syntax is proposed for a generator to delegate part of its operations to another generator. This allows a section of code containing ‘yield’ to be factored out and placed in another generator.</p>
+<p>— <a href="https://peps.python.org/pep-0380/">PEP 380 – SYNTAX FOR DELEGATING TO A SUBGENERATOR</a></p>
+</blockquote>
+<p>The <strong>“yield from”</strong> expression is still available for use in generators, although is a deprecated approach to suspending execution in coroutines, in favor of the <a href="https://docs.python.org/3/reference/expressions.html#yield-expressions"><strong>“await”</strong> expression.</a></p>
+<blockquote>
+<p>Note: Support for generator-based coroutines is deprecated and is removed in Python 3.11. Generator-based coroutines predate async/await syntax. They are Python generators that use yield from expressions to await on Futures and other coroutines.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-task.html">ASYNCIO COROUTINES AND TASKS</a></p>
+</blockquote>
+<p>We might say that coroutines were added as first-class objects to Python in version 3.5.</p>
+<p>This included changes to the Python language, such as the <strong>“async def“</strong>, <strong>“await“</strong>, <strong>“async with“</strong>, and <strong>“async for”</strong> expressions, as well as a coroutine type.</p>
+<p>These changes were described in <a href="https://peps.python.org/pep-0492/">PEP 492</a>.</p>
+<blockquote>
+<p>It is proposed to make coroutines a proper standalone concept in Python, and introduce new supporting syntax. The ultimate goal is to help establish a common, easily approachable, mental model of asynchronous programming in Python and make it as close to synchronous programming as possible.</p>
+<p>— <a href="https://peps.python.org/pep-0492/">PEP 492 – COROUTINES WITH ASYNC AND AWAIT SYNTAX</a></p>
+</blockquote>
+<p>Now that we know what a coroutine is, let’s take a closer look at how to use them in Python.</p>
+<p><strong>Overwheled by the python concurrency APIs?</strong></p>
+<p>Find relief, download my FREE <a href="https://marvelous-writer-6152.ck.page/8f23adb076">Python Concurrency Mind Maps</a></p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

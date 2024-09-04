@@ -1,0 +1,1624 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c14/">
+      
+      
+        <link rel="next" href="../c16/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>15. 在 Asyncio 中运行阻塞任务 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#15-在-asyncio-中运行阻塞任务" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              15. 在 Asyncio 中运行阻塞任务
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#151-需要在-asyncio-中运行阻塞任务" class="md-nav__link">
+    15.1 需要在 Asyncio 中运行阻塞任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#152-如何运行阻塞任务" class="md-nav__link">
+    15.2 如何运行阻塞任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#153-使用-to_thread-在-asyncio-中运行-io-密集型任务的示例" class="md-nav__link">
+    15.3 使用 to_thread() 在 Asyncio 中运行 I/O 密集型任务的示例
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#151-需要在-asyncio-中运行阻塞任务" class="md-nav__link">
+    15.1 需要在 Asyncio 中运行阻塞任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#152-如何运行阻塞任务" class="md-nav__link">
+    15.2 如何运行阻塞任务
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#153-使用-to_thread-在-asyncio-中运行-io-密集型任务的示例" class="md-nav__link">
+    15.3 使用 to_thread() 在 Asyncio 中运行 I/O 密集型任务的示例
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="15-在-asyncio-中运行阻塞任务">15. 在 Asyncio 中运行阻塞任务<a class="headerlink" href="#15-在-asyncio-中运行阻塞任务" title="Permanent link">&para;</a></h1>
+<p><strong>15. Run a Blocking Task in Asyncio</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>阻塞任务是阻止当前线程继续执行的任务。</p>
+<p>如果在 asyncio 程序中执行阻塞任务，它将停止整个事件循环，从而阻止任何其他协程进行。</p>
+<p>我们可以通过 <strong>asyncio.to_thread()</strong> 和 <strong>loop.run_in_executor()</strong> 函数在 asyncio 程序中异步运行阻塞调用。</p>
+</div>
+<div class="tabbed-block">
+<p>A blocking task is a task that stops the current thread from progressing.</p>
+<p>If a blocking task is executed in an asyncio program it stops the entire event loop, preventing any other coroutines from progressing.</p>
+<p>We can run blocking calls asynchronously in an asyncio program via the <strong>asyncio.to_thread()</strong> and <strong>loop.run_in_executor()</strong> functions.</p>
+</div>
+</div>
+</div>
+<h2 id="151-需要在-asyncio-中运行阻塞任务">15.1 需要在 Asyncio 中运行阻塞任务<a class="headerlink" href="#151-需要在-asyncio-中运行阻塞任务" title="Permanent link">&para;</a></h2>
+<p><strong>15.1 Need to Run Blocking Tasks in Asyncio</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>asyncio的重点是异步编程和非阻塞IO。</p>
+<p>然而，我们经常需要在异步应用程序中执行阻塞函数调用。</p>
+<p>这可能有多种原因，例如：</p>
+<ul>
+<li>执行 CPU 密集型任务，例如计算某些内容。</li>
+<li>执行阻塞 IO 密集型任务，例如从文件中读取或写入。</li>
+<li>调用尚不支持 asyncio 的第三方库。</li>
+</ul>
+<p>直接在 asyncio 程序中进行阻塞调用将导致事件循环在阻塞调用执行时停止。 它不会允许其他协程在后台运行。</p>
+<p>我们如何在 asyncio 程序中异步执行阻塞调用？</p>
+</div>
+<div class="tabbed-block">
+<p>The focus of asyncio is asynchronous programming and non-blocking IO.</p>
+<p>Nevertheless, we often need to execute a blocking function call within an asyncio application.</p>
+<p>This could be for many reasons, such as:</p>
+<ul>
+<li>To execute a CPU-bound task like calculating something.</li>
+<li>To execute a blocking IO-bound task like reading or writing from a file.</li>
+<li>To call into a third-party library that does not support asyncio yet.</li>
+</ul>
+<p>Making a blocking call directly in an asyncio program will cause the event loop to stop while the blocking call is executing. It will not allow other coroutines to run in the background.</p>
+<p>How can we execute a blocking call in an asyncio program asynchronously?</p>
+</div>
+</div>
+</div>
+<h2 id="152-如何运行阻塞任务">15.2 如何运行阻塞任务<a class="headerlink" href="#152-如何运行阻塞任务" title="Permanent link">&para;</a></h2>
+<p><strong>15.2 How to Run Blocking Tasks</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>asyncio 模块提供了两种在 asyncio 程序中执行阻塞调用的方法。</p>
+<p>第一种是使用 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.to_thread">asyncio.to_thread()</a> 函数。</p>
+<p>这是高级 API 中的内容，适用于应用程序开发人员。</p>
+<p><strong>asyncio.to_thread()</strong> 函数采用要执行的函数名称和任何参数。</p>
+<p>该函数在单独的线程中执行。 它返回一个可以作为独立任务等待或调度的协程。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 在单独的线程中执行函数</span>
+<span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>to_thread(task)
+</code></pre></div>
+<p>在返回的协程有机会在事件循环中运行之前，任务不会开始执行。</p>
+<p><strong>asyncio.to_thread()</strong> 函数在后台创建一个 <strong>ThreadPoolExecutor</strong> 来执行阻塞调用。</p>
+<p>因此， <strong>asyncio.to_thread()</strong> 函数仅适用于 IO 密集型任务。</p>
+<p>另一种方法是使用 <strong>loop.run_in_executor()</strong> 函数。</p>
+<p>这是在低级 asyncio API 中，首先需要访问事件循环，例如通过 <strong>asyncio.get_running_loop()</strong> 函数。</p>
+<p><strong>loop.run_in_executor()</strong> 函数需要一个执行器和一个要执行的函数。</p>
+<p>如果为执行器提供 <strong>None</strong>，则使用默认执行器，即 <strong>ThreadPoolExecutor</strong>。</p>
+<p><strong>loop.run_in_executor()</strong> 函数返回一个可等待的对象，如果需要，可以等待。 该任务将立即开始执行，因此不需要等待或安排返回的可等待对象来开始执行阻塞调用。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 获取事件循环</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>get_running_loop()
+<span style="color: #3D7B7B; font-style: italic"># 在单独的线程中执行函数</span>
+<span style="color: #008000; font-weight: bold">await</span> loop<span style="color: #666666">.</span>run_in_executor(<span style="color: #008000; font-weight: bold">None</span>, task)
+</code></pre></div>
+<p>或者，可以创建一个执行器并将其传递给 <strong>loop.run_in_executor()</strong> 函数，该函数将在执行器中执行异步调用。</p>
+<p>在这种情况下，调用者必须管理执行器，在调用者完成后将其关闭。</p>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建进程池</span>
+<span style="color: #008000; font-weight: bold">with</span> ProcessPoolExecutor <span style="color: #008000; font-weight: bold">as</span> exe:
+    <span style="color: #3D7B7B; font-style: italic"># 获取事件循环</span>
+    loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>get_running_loop()
+    <span style="color: #3D7B7B; font-style: italic"># 在单独的线程中执行函数</span>
+    <span style="color: #008000; font-weight: bold">await</span> loop<span style="color: #666666">.</span>run_in_executor(exe, task)
+    <span style="color: #3D7B7B; font-style: italic"># 进程池自动关闭...</span>
+</code></pre></div>
+<p>这两种方法允许阻塞调用作为 asyncio 程序中的异步任务执行。</p>
+<p>现在我们知道如何在 asyncio 程序中执行阻塞调用，让我们看一些有效的示例。</p>
+</div>
+<div class="tabbed-block">
+<p>The asyncio module provides two approaches for executing blocking calls in asyncio programs.</p>
+<p>The first is to use the <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.to_thread">asyncio.to_thread()</a> function.</p>
+<p>This is in the high-level API and is intended for application developers.</p>
+<p>The <strong>asyncio.to_thread()</strong> function takes a function name to execute and any arguments.</p>
+<p>The function is executed in a separate thread. It returns a coroutine that can be awaited or scheduled as an independent task.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># execute a function in a separate thread</span>
+<span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>to_thread(task)
+</code></pre></div>
+<p>The task will not begin executing until the returned coroutine is given an opportunity to run in the event loop.</p>
+<p>The <strong>asyncio.to_thread()</strong> function creates a <strong>ThreadPoolExecutor</strong> behind the scenes to execute blocking calls.</p>
+<p>As such, the <strong>asyncio.to_thread()</strong> function is only appropriate for IO-bound tasks.</p>
+<p>An alternative approach is to use the <strong>loop.run_in_executor()</strong> function.</p>
+<p>This is in the low-level asyncio API and first requires access to the event loop, such as via the <strong>asyncio.get_running_loop()</strong> function.</p>
+<p>The <strong>loop.run_in_executor()</strong> function takes an executor and a function to execute.</p>
+<p>If <strong>None</strong> is provided for the executor, then the default executor is used, which is a <strong>ThreadPoolExecutor</strong>.</p>
+<p>The <strong>loop.run_in_executor()</strong> function returns an awaitable that can be awaited if needed. The task will begin executing immediately, so the returned awaitable does not need to be awaited or scheduled for the blocking call to start executing.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># get the event loop</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>get_running_loop()
+<span style="color: #3D7B7B; font-style: italic"># execute a function in a separate thread</span>
+<span style="color: #008000; font-weight: bold">await</span> loop<span style="color: #666666">.</span>run_in_executor(<span style="color: #008000; font-weight: bold">None</span>, task)
+</code></pre></div>
+<p>Alternatively, an executor can be created and passed to the <strong>loop.run_in_executor()</strong> function, which will execute the asynchronous call in the executor.</p>
+<p>The caller must manage the executor in this case, shutting it down once the caller is finished with it.</p>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create a process pool</span>
+<span style="color: #008000; font-weight: bold">with</span> ProcessPoolExecutor <span style="color: #008000; font-weight: bold">as</span> exe:
+    <span style="color: #3D7B7B; font-style: italic"># get the event loop</span>
+    loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>get_running_loop()
+    <span style="color: #3D7B7B; font-style: italic"># execute a function in a separate thread</span>
+    <span style="color: #008000; font-weight: bold">await</span> loop<span style="color: #666666">.</span>run_in_executor(exe, task)
+    <span style="color: #3D7B7B; font-style: italic"># process pool is shutdown automatically...</span>
+</code></pre></div>
+<p>These two approaches allow a blocking call to be executed as an asynchronous task in an asyncio program.</p>
+<p>Now that we know how to execute blocking calls in an asyncio program, let’s look at some worked examples.</p>
+</div>
+</div>
+</div>
+<h2 id="153-使用-to_thread-在-asyncio-中运行-io-密集型任务的示例">15.3 使用 to_thread() 在 Asyncio 中运行 I/O 密集型任务的示例<a class="headerlink" href="#153-使用-to_thread-在-asyncio-中运行-io-密集型任务的示例" title="Permanent link">&para;</a></h2>
+<p>15.3 Example of Running I/O-Bound Task in Asyncio with to_thread()</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们可以探索如何使用 <strong>asyncio.to_thread()</strong> 在 asyncio 程序中执行阻塞 IO 绑定调用。</p>
+<p>在此示例中，我们将定义一个函数来阻止调用者几秒钟。 然后，我们将使用 <strong>asyncio.to_thread()</strong> 函数在 asyncio 的线程池中异步执行此函数。</p>
+<p>这将使调用者能够自由地继续其他活动。</p>
+<p>下面列出了完整的示例。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 在 asyncio 中运行阻塞 io 绑定任务的示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">time</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 阻塞 io 绑定任务</span>
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">blocking_task</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Task starting&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 阻塞暂停2s</span>
+    time<span style="color: #666666">.</span>sleep(<span style="color: #666666">2</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Task done&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># 主协程</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Main running the blocking task&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 为阻塞任务创建一个协程</span>
+    coro <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>to_thread(blocking_task)
+    <span style="color: #3D7B7B; font-style: italic"># 安排任务</span>
+    task <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>create_task(coro)
+    <span style="color: #3D7B7B; font-style: italic"># 报告消息</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Main doing other things&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 允许计划任务启动</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">0</span>)
+    <span style="color: #3D7B7B; font-style: italic"># 等待任务</span>
+    <span style="color: #008000; font-weight: bold">await</span> task
+
+<span style="color: #3D7B7B; font-style: italic"># 运行异步程序</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>运行该示例首先创建 <strong>main()</strong> 协程，并将其作为 asyncio 程序的入口点运行。</p>
+<p><strong>main()</strong> 协程运行并报告一条消息。 然后它向线程池发出对阻塞函数的调用。 这返回一个协程，</p>
+<p>然后协程被包装在 <strong>Task</strong> 中并独立执行。</p>
+<p><strong>main()</strong> 协程可以自由地继续其他活动。 在这种情况下，它会休眠一会儿以允许计划任务开始执行。 这使得目标函数可以在后台发布到<strong>ThreadPoolExecutor</strong>并开始运行。</p>
+<p>然后 <strong>main()</strong> 协程挂起并等待任务完成。</p>
+<p>阻塞函数报告一条消息，休眠2秒，然后报告最后一条消息。</p>
+<p>这突出显示了我们如何在单独的线程中从 asyncio 程序异步执行阻塞 IO 绑定任务。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Main running the blocking task
+Main doing other things
+Task starting
+Task done
+</code></pre></div>
+<p>您可以在教程中了解有关 to_thread() 函数的更多信息：</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-to_thread/">如何使用 Asyncio to_thread()</a></li>
+</ul>
+<p>接下来，我们将探讨如何开发和使用异步迭代器。</p>
+</div>
+<div class="tabbed-block">
+<p>We can explore how to execute a blocking IO-bound call in an asyncio program using <strong>asyncio.to_thread()</strong>.</p>
+<p>In this example, we will define a function that blocks the caller for a few seconds. We will then execute this function asynchronously in a thread pool from asyncio using the <strong>asyncio.to_thread()</strong> function.</p>
+<p>This will free the caller to continue with other activities.</p>
+<p>The complete example is listed below.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># example of running a blocking io-bound task in asyncio</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">time</span>
+
+<span style="color: #3D7B7B; font-style: italic"># a blocking io-bound task</span>
+<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">blocking_task</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Task starting&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># block for a while</span>
+    time<span style="color: #666666">.</span>sleep(<span style="color: #666666">2</span>)
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Task done&#39;</span>)
+
+<span style="color: #3D7B7B; font-style: italic"># main coroutine</span>
+<span style="color: #008000; font-weight: bold">async</span> <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">main</span>():
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Main running the blocking task&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># create a coroutine for  the blocking task</span>
+    coro <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>to_thread(blocking_task)
+    <span style="color: #3D7B7B; font-style: italic"># schedule the task</span>
+    task <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>create_task(coro)
+    <span style="color: #3D7B7B; font-style: italic"># report a message</span>
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Main doing other things&#39;</span>)
+    <span style="color: #3D7B7B; font-style: italic"># allow the scheduled task to start</span>
+    <span style="color: #008000; font-weight: bold">await</span> asyncio<span style="color: #666666">.</span>sleep(<span style="color: #666666">0</span>)
+    <span style="color: #3D7B7B; font-style: italic"># await the task</span>
+    <span style="color: #008000; font-weight: bold">await</span> task
+
+<span style="color: #3D7B7B; font-style: italic"># run the asyncio program</span>
+asyncio<span style="color: #666666">.</span>run(main())
+</code></pre></div>
+<p>Running the example first creates the <strong>main()</strong> coroutine and runs it as the entry point into the asyncio program.</p>
+<p>The <strong>main()</strong> coroutine runs and reports a message. It then issues a call to the blocking function call to the thread pool. This returns a coroutine,</p>
+<p>The coroutine is then wrapped in a <strong>Task</strong> and executed independently.</p>
+<p>The <strong>main()</strong> coroutine is free to continue with other activities. In this case, it sleeps for a moment to allow the scheduled task to start executing. This allows the target function to be issued to the <strong>ThreadPoolExecutor</strong> behind the scenes and start running.</p>
+<p>The <strong>main()</strong> coroutine then suspends and waits for the task to complete.</p>
+<p>The blocking function reports a message, sleeps for 2 seconds, then reports a final message.</p>
+<p>This highlights how we can execute a blocking IO-bound task in a separate thread asynchronously from an asyncio program.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>Main running the blocking task
+Main doing other things
+Task starting
+Task done
+</code></pre></div>
+<p>You can learn more about the to_thread() function in the tutorial:</p>
+<ul>
+<li><a href="https://superfastpython.com/asyncio-to_thread/">How to Use Asyncio to_thread()</a></li>
+</ul>
+<p>Next, we will explore how to develop and use asynchronous iterators.</p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>

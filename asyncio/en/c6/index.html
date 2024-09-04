@@ -1,0 +1,1634 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hellowac-异步编程资料">
+      
+      
+      
+      
+        <link rel="prev" href="../c5/">
+      
+      
+        <link rel="next" href="../c7/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+    
+    
+      
+        <title>6. 事件循环是什么 - async异步编程</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#6-事件循环是什么" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+你当前浏览的版本已不是最新版本，
+<a href="../../../..">
+    <strong>点击这里</strong>
+</a>查看最新版本的文档
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="async异步编程" class="md-header__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            async异步编程
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              6. 事件循环是什么
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  概览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  完整指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runner/" class="md-tabs__link">
+          
+  
+    
+  
+  其他
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="async异步编程" class="md-nav__button md-logo" aria-label="async异步编程" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    async异步编程
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hellowac/async-zh-cn" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hellowac/async-zh-cn
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    概览
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            概览
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    完整指南
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            完整指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1. 什么是异步编程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2. Asyncio 是什么
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3. Asyncio 在什么时候使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4. Python 中的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    5. 定义、创建和运行协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    6. 事件循环是什么
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#61-asyncio-的事件循环是什么" class="md-nav__link">
+    6.1 Asyncio 的事件循环是什么
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-事件循环如何获取和启动" class="md-nav__link">
+    6.2 事件循环如何获取和启动
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63-事件循环对象是什么" class="md-nav__link">
+    6.3 事件循环对象是什么
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#64-为什么要访问事件循环" class="md-nav__link">
+    6.4 为什么要访问事件循环
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    7. Asyncio 任务的创建和运行
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c8/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    8. 使用和查询任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c9/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    9. 当前正在运行的任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c10/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    10. 同时运行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c11/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    11. 在Group中管理多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c12/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    12. 等待任务的集合
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c13/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    13. 等待有时间限制的协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c14/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    14. 防止任务被取消
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c15/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    15. 在 Asyncio 中运行阻塞任务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c16/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    16. 异步迭代器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c17/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    17. 异步生成器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c18/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    18. 异步上下文管理器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c19/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    19. 异步推导式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c20/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    20. 在非阻塞子进程中运行命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c21/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    21. 非阻塞流
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c22/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    22. 检查网站状态的示例
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c23/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    23. Python Asyncio 常见错误
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c24/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    24. Python Asyncio 常见问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c25/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    25. 使用 Asyncio 的常见反对意见
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c26/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    26. 进一步阅读
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c27/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    27. 结论
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    其他
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runner/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用async.Runner执行多个协程
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../task_group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何使用 asyncio.TaskGroup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cheat_sheet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asyncio 表达式及API备忘录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_mind_map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asyncio API 思维导图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#61-asyncio-的事件循环是什么" class="md-nav__link">
+    6.1 Asyncio 的事件循环是什么
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-事件循环如何获取和启动" class="md-nav__link">
+    6.2 事件循环如何获取和启动
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63-事件循环对象是什么" class="md-nav__link">
+    6.3 事件循环对象是什么
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#64-为什么要访问事件循环" class="md-nav__link">
+    6.4 为什么要访问事件循环
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="6-事件循环是什么">6. 事件循环是什么<a class="headerlink" href="#6-事件循环是什么" title="Permanent link">&para;</a></h1>
+<p><strong>6. What is the Event Loop</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">中文</label><label for="__tabbed_1_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>异步程序的核心是事件循环。</p>
+<p>在本节中，我们将花一些时间来了解异步事件循环。</p>
+</div>
+<div class="tabbed-block">
+<p>The heart of asyncio programs is the event loop.</p>
+<p>In this section, we will take a moment to look at the asyncio event loop.</p>
+</div>
+</div>
+</div>
+<h2 id="61-asyncio-的事件循环是什么">6.1 Asyncio 的事件循环是什么<a class="headerlink" href="#61-asyncio-的事件循环是什么" title="Permanent link">&para;</a></h2>
+<p><strong>6.1 What is the Asyncio Event Loop</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">中文</label><label for="__tabbed_2_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>事件循环是在单线程中执行协程的环境。</p>
+<blockquote>
+<p>asyncio 是一个使用称为单线程事件循环的并发模型以异步方式执行这些协程的库。</p>
+<p>— PAGE 3, <a href="https://amzn.to/3VVaq59">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>事件循环是 asyncio 程序的核心。</p>
+<p>它可以做很多事情，例如：</p>
+<ol>
+<li>执行协程。</li>
+<li>执行回调。</li>
+<li>执行网络输入/输出。</li>
+<li>运行子进程。</li>
+</ol>
+<blockquote>
+<p>事件循环是每个异步应用程序的核心。 事件循环运行异步任务和回调、执行网络 IO 操作并运行子进程。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>事件循环是一种常见的设计模式，并且由于它们在 JavaScript 中的使用，近年来变得非常流行。</p>
+<blockquote>
+<p>JavaScript 有一个基于事件循环的运行时模型，它负责执行代码、收集和处理事件以及执行排队的子任务。 该模型与 C 和 Java 等其他语言中的模型有很大不同。</p>
+<p>— <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop">THE EVENT LOOP, MOZILLA.</a></p>
+</blockquote>
+<p>事件循环，顾名思义，就是一个循环。 它管理任务（协程）列表，并尝试在循环的每次迭代中按顺序执行每个任务，以及执行其他任务，例如执行回调和处理 I/O。</p>
+<p><strong>“asyncio”</strong>模块提供了访问事件循环并与之交互的功能。</p>
+<p>这对于典型的应用程序开发来说不是必需的。</p>
+<p>相反，为框架开发人员提供对事件循环的访问，这些开发人员希望在 asyncio 模块之上构建或为其库启用 asyncio。</p>
+<blockquote>
+<p>应用程序开发人员通常应使用高级 asyncio 函数，例如 asyncio.run()，并且很少需要引用循环对象或调用其方法。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>asyncio 模块提供了一个低级 API，用于访问当前事件循环对象，以及一套可用于与事件循环交互的方法。</p>
+<p>低级 API 旨在供框架开发人员扩展、补充 asyncio 并将其集成到第三方库中。</p>
+<p>我们很少需要与 asyncio 程序中的事件循环进行交互，而是使用高级 API。</p>
+<p>尽管如此，我们还是可以简单探讨一下如何获取事件循环。</p>
+</div>
+<div class="tabbed-block">
+<p>The event loop is an environment for executing coroutines in a single thread.</p>
+<blockquote>
+<p>asyncio is a library to execute these coroutines in an asynchronous fashion using a concurrency model known as a single-threaded event loop.</p>
+<p>— PAGE 3, <a href="https://amzn.to/3VVaq59">PYTHON CONCURRENCY WITH ASYNCIO</a>, 2022.</p>
+</blockquote>
+<p>The event loop is the core of an asyncio program.</p>
+<p>It does many things, such as:</p>
+<ol>
+<li>Execute coroutines.</li>
+<li>Execute callbacks.</li>
+<li>Perform network input/output.</li>
+<li>Run subprocesses.</li>
+</ol>
+<blockquote>
+<p>The event loop is the core of every asyncio application. Event loops run asynchronous tasks and callbacks, perform network IO operations, and run subprocesses.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>Event loops are a common design pattern and became very popular in recent times given their use in JavaScript.</p>
+<blockquote>
+<p>JavaScript has a runtime model based on an event loop, which is responsible for executing the code, collecting and processing events, and executing queued sub-tasks. This model is quite different from models in other languages like C and Java.</p>
+<p>— <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop">THE EVENT LOOP, MOZILLA.</a></p>
+</blockquote>
+<p>The event loop, as its name suggests, is a loop. It manages a list of tasks (coroutines) and attempts to progress each in sequence in each iteration of the loop, as well as perform other tasks like executing callbacks and handling I/O.</p>
+<p>The <strong>“asyncio”</strong> module provides functions for accessing and interacting with the event loop.</p>
+<p>This is not required for typical application development.</p>
+<p>Instead, access to the event loop is provided for framework developers, those that want to build on top of the asyncio module or enable asyncio for their library.</p>
+<blockquote>
+<p>Application developers should typically use the high-level asyncio functions, such as asyncio.run(), and should rarely need to reference the loop object or call its methods.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>The asyncio module provides a low-level API for getting access to the current event loop object, as well as a suite of methods that can be used to interact with the event loop.</p>
+<p>The low-level API is intended for framework developers that will extend, complement and integrate asyncio into third-party libraries.</p>
+<p>We rarely need to interact with the event loop in asyncio programs, in favor of using the high-level API instead.</p>
+<p>Nevertheless, we can briefly explore how to get the event loop.</p>
+</div>
+</div>
+</div>
+<h2 id="62-事件循环如何获取和启动">6.2 事件循环如何获取和启动<a class="headerlink" href="#62-事件循环如何获取和启动" title="Permanent link">&para;</a></h2>
+<p><strong>6.2 How To Start and Get An Event Loop</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">中文</label><label for="__tabbed_3_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>我们在异步应用程序中创建事件循环的典型方法是通过 <strong>asyncio.run()</strong> 函数。</p>
+<blockquote>
+<p>该函数总是创建一个新的事件循环并在最后关闭它。 它应该用作 asyncio 程序的主要入口点，并且最好只调用一次。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-task.html">ASYNCIO COROUTINES AND TASKS</a></p>
+</blockquote>
+<p>该函数采用一个协程并将其执行直至完成。</p>
+<p>我们通常将其传递给我们的主协程并从那里运行我们的程序。</p>
+<p>有一些低级函数用于创建和访问事件循环。</p>
+<p><a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.new_event_loop">asyncio.new_event_loop()</a> 函数将创建一个新的事件循环并返回对其的访问权限。</p>
+<blockquote>
+<p>创建并返回一个新的事件循环对象。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建并访问新的异步事件循环</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>new_event_loop()
+</code></pre></div>
+<p>我们可以用一个有效的例子来证明这一点。</p>
+<p>在下面的示例中，我们将创建一个新的事件循环，然后报告其详细信息。</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># 创建事件循环的示例</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># 创建并访问新的异步事件循环</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>new_event_loop()
+<span style="color: #3D7B7B; font-style: italic"># 报告循环的默认值</span>
+<span style="color: #008000">print</span>(loop)
+</code></pre></div>
+<p>运行该示例将创建事件循环，然后报告对象的详细信息。</p>
+<p>我们可以看到，在这种情况下，事件循环的类型为 <strong>_UnixSelectorEventLoop</strong> 并且没有运行，但也没有关闭。</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>&lt;_UnixSelectorEventLoop running=False closed=False debug=False&gt;
+</code></pre></div>
+<p>如果 asyncio 事件循环已经在运行，我们可以通过 <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_running_loop">asyncio.get_running_loop()</a> 函数访问它。</p>
+<blockquote>
+<p>返回当前操作系统线程中正在运行的事件循环。 如果没有正在运行的事件循环，则会引发 RuntimeError。 该函数只能从协程或回调中调用。</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>例如：</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># 访问正在运行的事件循环</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>get_running_loop()
+</code></pre></div>
+<p>还有一个用于获取或启动事件循环的函数，称为 <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_event_loop">asyncio.get_event_loop()</a>，但已弃用 在 Python 3.10 中，不应使用。</p>
+</div>
+<div class="tabbed-block">
+<p>The typical way we create an event loop in asyncio applications is via the <strong>asyncio.run()</strong> function.</p>
+<blockquote>
+<p>This function always creates a new event loop and closes it at the end. It should be used as a main entry point for asyncio programs, and should ideally only be called once.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-task.html">ASYNCIO COROUTINES AND TASKS</a></p>
+</blockquote>
+<p>The function takes a coroutine and will execute it to completion.</p>
+<p>We typically pass it to our main coroutine and run our program from there.</p>
+<p>There are low-level functions for creating and accessing the event loop.</p>
+<p>The <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.new_event_loop">asyncio.new_event_loop()</a> function will create a new event loop and return access to it.</p>
+<blockquote>
+<p>Create and return a new event loop object.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># create and access a new asyncio event loop</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>new_event_loop()
+</code></pre></div>
+<p>We can demonstrate this with a worked example.</p>
+<p>In the example below we will create a new event loop and then report its details.</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #3D7B7B; font-style: italic"># SuperFastPython.com</span>
+<span style="color: #3D7B7B; font-style: italic"># example of creating an event loop</span>
+<span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">asyncio</span>
+
+<span style="color: #3D7B7B; font-style: italic"># create and access a new asyncio event loop</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>new_event_loop()
+<span style="color: #3D7B7B; font-style: italic"># report defaults of the loop</span>
+<span style="color: #008000">print</span>(loop)
+</code></pre></div>
+<p>Running the example creates the event loop, then reports the details of the object.</p>
+<p>We can see that in this case the event loop has the type <strong>_UnixSelectorEventLoop</strong> and is not running, but is also not closed.</p>
+<div class="language-text highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>&lt;_UnixSelectorEventLoop running=False closed=False debug=False&gt;
+</code></pre></div>
+<p>If an asyncio event loop is already running, we can get access to it via the asyncio.get_running_loop() function.</p>
+<blockquote>
+<p>Return the running event loop in the current OS thread. If there is no running event loop a RuntimeError is raised. This function can only be called from a coroutine or a callback.</p>
+<p>— <a href="https://docs.python.org/3/library/asyncio-eventloop.html">ASYNCIO EVENT LOOP</a></p>
+</blockquote>
+<p>For example:</p>
+<div class="language-python highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #666666">...</span>
+<span style="color: #3D7B7B; font-style: italic"># access he running event loop</span>
+loop <span style="color: #666666">=</span> asyncio<span style="color: #666666">.</span>get_running_loop()
+</code></pre></div>
+<p>There is also a function for getting or starting the event loop called <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_event_loop">asyncio.get_event_loop()</a>, but it was deprecated in Python 3.10 and should not be used.</p>
+</div>
+</div>
+</div>
+<h2 id="63-事件循环对象是什么">6.3 事件循环对象是什么<a class="headerlink" href="#63-事件循环对象是什么" title="Permanent link">&para;</a></h2>
+<p><strong>6.3 What is an Event Loop Object</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">中文</label><label for="__tabbed_4_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>事件循环作为 Python 对象实现。</p>
+<p>事件循环对象定义了事件循环的实现方式，并提供了与循环交互的通用 API，定义在 <a href="https://github.com/python/cpython/blob/3.10/Lib/asyncio/events.py#L204">AbstractEventLoop</a> 类。</p>
+<p>不同平台的事件循环有<a href="https://docs.python.org/3/library/asyncio-eventloop.html#event-loop-implementations">不同的实现</a>。</p>
+<p>例如，基于 Windows 和 Unix 的操作系统将以不同的方式实现事件循环，因为这些平台上实现非阻塞 I/O 的底层方式不同。</p>
+<p><a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.SelectorEventLoop">SelectorEventLoop</a> 类型事件循环是基于 Unix 的操作系统（如 Linux 和 macOS）上的默认设置。</p>
+<p><a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.ProactorEventLoop">ProactorEventLoop</a> 类型事件循环是 Windows 上的默认设置。</p>
+<p>第三方库可以实现自己的事件循环来优化特定功能。</p>
+</div>
+<div class="tabbed-block">
+<p>An event loop is implemented as a Python object.</p>
+<p>The event loop object defines how the event loop is implemented and provides a common API for interacting with the loop, defined on the <a href="https://github.com/python/cpython/blob/3.10/Lib/asyncio/events.py#L204">AbstractEventLoop</a> class.</p>
+<p>There are <a href="https://docs.python.org/3/library/asyncio-eventloop.html#event-loop-implementations">different implementations</a> of the event loop for different platforms.</p>
+<p>For example, Windows and Unix-based operations systems will implement the event loop in different ways, given the different underlying ways that non-blocking I/O is implemented on these platforms.</p>
+<p>The <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.SelectorEventLoop">SelectorEventLoop</a> type event loop is the default on Unix-based operating systems like Linux and macOS.</p>
+<p>The <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.ProactorEventLoop">ProactorEventLoop</a> type event loop is the default on Windows.</p>
+<p>Third-party libraries may implement their own event loops to optimize for specific features.</p>
+</div>
+</div>
+</div>
+<h2 id="64-为什么要访问事件循环">6.4 为什么要访问事件循环<a class="headerlink" href="#64-为什么要访问事件循环" title="Permanent link">&para;</a></h2>
+<p><strong>6.4 Why Get Access to The Event Loop</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">中文</label><label for="__tabbed_5_2">英文</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>为什么我们想要访问 asyncio 程序之外的事件循环？</p>
+<p>我们可能希望从正在运行的 asyncio 程序外部访问事件循环的原因有很多。</p>
+<p>例如：</p>
+<ol>
+<li>监控任务的进展情况。</li>
+<li>发出任务并获取结果。</li>
+<li>解雇并忘记一次性任务。</li>
+</ol>
+<p>异步事件循环可以在程序中用作基于协程的任务的线程池的替代方案。</p>
+<p>事件循环也可以嵌入到普通的异步程序中并根据需要进行访问。</p>
+<p>现在我们对事件循环有了一些了解，让我们看看异步任务。</p>
+</div>
+<div class="tabbed-block">
+<p>Why would we want access to an event loop outside of an asyncio program?</p>
+<p>There are many reasons why we may want access to the event loop from outside of a running asyncio program.</p>
+<p>For example:</p>
+<ol>
+<li>To monitor the progress of tasks.</li>
+<li>To issue and get results from tasks.</li>
+<li>To fire and forget one-off tasks.</li>
+</ol>
+<p>An asyncio event loop can be used in a program as an alternative to a thread pool for coroutine-based tasks.</p>
+<p>An event loop may also be embedded within a normal asyncio program and accessed as needed.</p>
+<p>Now that we know a little about the event loop, let’s look at asyncio tasks.</p>
+</div>
+</div>
+</div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      最后更新:
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+        <br>
+        创建日期:
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">2024年9月4日</span>
+      
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "navigation.path", "content.tabs.link", "content.code.copy", "content.tooltips", "navigation.indexes", "navigation.prune", "navigation.instant"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>
